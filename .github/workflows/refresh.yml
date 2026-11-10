@@ -30,8 +30,9 @@ jobs:
       - name: Build the page
         run: node scripts/render.mjs
         env:
-          # Our HubSpot function behind the Refresh data button (hubspot-function/). Same domain as the page.
-          REFRESH_ENDPOINT: /hs/serverless/endsight-event-roi/refresh
+          # The Cloudflare Worker behind the Refresh data button (cloudflare-worker/).
+          # Set it under Settings > Secrets and variables > Actions > Variables. Unset hides the button.
+          REFRESH_ENDPOINT: ${{ vars.REFRESH_ENDPOINT }}
       - name: Publish to HubSpot
         run: node scripts/publish-hubspot.mjs
         env:

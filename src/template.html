@@ -1021,9 +1021,9 @@
   render();
   initRefresh();
 
-  // Refresh button. Asks our HubSpot function to start the GitHub job that pulls from HubSpot and
+  // Refresh button. Asks our Cloudflare Worker to start the GitHub job that pulls from HubSpot and
   // republishes this page, follows the run, then reloads once the new version is live.
-  // The GitHub token stays in the function; the page only knows the endpoint.
+  // The GitHub token stays in the Worker; the page only knows its URL.
   // Hidden when the page was built without an endpoint.
   function initRefresh() {
     var cfg = null;
@@ -1033,8 +1033,8 @@
     $('refresh-ctl').hidden = false;
     function call(method, query) {
       return fetch(cfg.endpoint + (query || ''), {
-        method: method, cache: 'no-store', credentials: 'same-origin',
-        headers: {'Content-Type': 'application/json'}, body: method === 'POST' ? '{}' : undefined
+        method: method, cache: 'no-store', credentials: 'omit',
+        headers: method === 'POST' ? {'Content-Type': 'application/json'} : {}, body: method === 'POST' ? '{}' : undefined
       }).then(function (r) {
         return r.json().catch(function () { return {}; }).then(function (j) {
           if (!r.ok) { var e = new Error(j.error || 'HTTP ' + r.status); e.status = r.status; throw e; }

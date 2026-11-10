@@ -8,7 +8,7 @@ scripts/render.mjs          template + data   ->  dist/index.html            (an
                                                ->  dist/hubspot-template.html (HubSpot coded template)
 scripts/publish-hubspot.mjs dist/hubspot-template.html -> our HubSpot Design Manager
 .github/workflows/refresh.yml  runs all three every morning at 5:47 AM Pacific, and on demand
-hubspot-function/           HubSpot function behind the page's Refresh data button
+cloudflare-worker/worker.js  Cloudflare Worker behind the page's Refresh data button
 ```
 
 Node 22 or later. No npm dependencies. The page loads Chart.js from jsDelivr and Lexend Deca from Google Fonts.
@@ -95,14 +95,15 @@ From then on, every scheduled run re-uploads the template and the live page show
 
 ### 6. Refresh data button
 
-The button calls a HubSpot function on our portal (`/hs/serverless/endsight-event-roi/refresh`), which holds a GitHub token and starts the workflow. The page never carries a credential. Public function endpoints need Content Hub Enterprise.
+The button calls a Cloudflare Worker (`cloudflare-worker/worker.js`), which holds a GitHub token and starts the workflow. The page never carries a credential. A HubSpot serverless function would avoid the extra vendor but needs Content Hub Enterprise, which Endsight's portal doesn't have.
 
 1. GitHub: create a fine-grained personal access token. Resource owner `revops-support`, repository access limited to `endsight-event-roi`, one permission: Actions, Read and write.
-2. Install the HubSpot CLI (`npm install -g @hubspot/cli`, version 8.4 or later) and run `hs account auth` against our portal.
-3. From `hubspot-function/`: `hs secret add ENDSIGHT_GITHUB_TOKEN` and paste the token at the prompt, then `hs project upload`, then `hs project install-app`.
-4. Run the workflow once so the page picks up the button.
+2. Cloudflare (free plan): Workers & Pages > Create > Worker, name it `endsight-roi-refresh`, deploy, then Edit code, replace everything with `cloudflare-worker/worker.js`, and deploy again.
+3. On the Worker, Settings > Variables and Secrets: add a Secret `GITHUB_TOKEN` with the token, and a Text variable `ALLOWED_ORIGIN` with the page's origin (for example `https://www.endsight.net`).
+4. GitHub: Settings > Secrets and variables > Actions > Variables > New repository variable `REFRESH_ENDPOINT`, value the Worker's URL.
+5. Run the workflow once so the page picks up the button.
 
-The endpoint is public, so it only reports a run's id, status and timestamps, never starts a second run while one is queued or running, and never starts one within a minute of the last. Rotate the token by repeating step 1 and running `hs secret update ENDSIGHT_GITHUB_TOKEN`.
+The endpoint is public, so it only reports a run's id, status and timestamps, never starts a second run while one is queued or running, and never starts one within a minute of the last. Rotate the token by repeating step 1 and replacing the Worker secret.
 
 ## Moving to Endsight's server
 

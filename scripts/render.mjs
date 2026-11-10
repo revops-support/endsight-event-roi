@@ -25,8 +25,8 @@ const safe = (v) => JSON.stringify(v)
   .replace(/\u2029/g, '\\u2029');
 const json = safe(data);
 
-// Refresh button: only built in when REFRESH_ENDPOINT is set. It is the path of our HubSpot function
-// (hubspot-function/), which holds the GitHub token. The page itself never carries a credential.
+// Refresh button: only built in when REFRESH_ENDPOINT is set. It is the URL of the Cloudflare Worker
+// (cloudflare-worker/), which holds the GitHub token. The page itself never carries a credential.
 const refresh = process.env.REFRESH_ENDPOINT ? {endpoint: process.env.REFRESH_ENDPOINT} : null;
 
 // Function replacements, so a "$&" or "$'" inside the data is not read as a replacement pattern.
