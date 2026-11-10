@@ -175,7 +175,7 @@
   <div class="card">
     <div class="tablewrap">
       <table class="wide">
-        <thead><tr><th>Deal</th><th>Credit</th><th>Stage</th><th>Created</th><th class="num">Amount (MRR)</th><th>Shared with</th><th class="num">Credited</th><th>Contacts</th></tr></thead>
+        <thead><tr><th>Deal</th><th>Credit</th><th>Stage</th><th>Deal create date</th><th class="num">Amount (MRR)</th><th>Shared with</th><th class="num">Credited</th><th>Contacts</th></tr></thead>
         <tbody id="t-deals"></tbody>
       </table>
     </div>
@@ -574,7 +574,7 @@
   function dealSpec(title, sub, list, inf, hs) {
     return {
       title: title, sub: sub, hs: hs, count: plural(list.length, 'deal', 'deals'),
-      columns: [{label: 'Deal'}, {label: 'Credit'}, {label: 'Stage'}, {label: 'Created'}, {label: 'Amount (MRR)', num: true}, {label: 'Shared with'}, {label: 'Credited', num: true}, {label: 'Contacts'}],
+      columns: [{label: 'Deal'}, {label: 'Credit'}, {label: 'Stage'}, {label: 'Deal create date'}, {label: 'Amount (MRR)', num: true}, {label: 'Shared with'}, {label: 'Credited', num: true}, {label: 'Contacts'}],
       rows: list.slice().sort(function (x, y) { return String(x.deal.createdate).localeCompare(String(y.deal.createdate)); }).map(function (c) {
         var d = c.deal;
         return [a(d.name, link.deal(d.id)), pill(c.kind, 'credit' + (c.kind === 'Influenced' ? ' influenced' : '')), d.stage, fmtDate(d.createdate),
