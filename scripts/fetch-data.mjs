@@ -502,6 +502,15 @@ async function main() {
       };
     });
   }
+  // Keep only what any event can credit: deals still open, or closed, on or after the earliest event date,
+  // and meetings created on or after it. Older history only makes the page heavier.
+  const earliest = events.map((e) => e.eventDate).filter(Boolean).sort()[0];
+  if (earliest) {
+    const d0 = deals.length, m0 = meetings.length;
+    deals = deals.filter((d) => !d.isClosed || !d.closedate || d.closedate >= earliest);
+    meetings = meetings.filter((m) => m.createdate && m.createdate >= earliest);
+    log(`kept ${deals.length} of ${d0} deal(s) and ${meetings.length} of ${m0} meeting(s) on or after ${earliest}`);
+  }
   log(`${deals.length} deal(s), ${meetings.length} meeting(s), ${resolved.length} touch(es), ${contactIds.length} contact record(s)`);
 
   const data = {
@@ -517,7 +526,7 @@ async function main() {
   // Send ids are only needed here; keep the page lean.
   for (const ev of data.events) for (const em of ev.emails) delete em.sendIds;
   await mkdir(dirname(OUT), {recursive: true});
-  await writeFile(OUT, JSON.stringify(data, null, 2));
+  await writeFile(OUT, JSON.stringify(data));
   log(`wrote ${OUT}`);
 }
 

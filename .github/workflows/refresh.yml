@@ -13,6 +13,8 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    env:
+      HUBSPOT_TEMPLATE_PATH: endsight/endsight-event-roi.html
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
@@ -27,6 +29,8 @@ jobs:
           HUBSPOT_PORTAL_ID: '2823558'
           REPORT_BLINQ_TAGS: '446645630'
           REPORT_CONTACTS_BY_STAGE: '446661489'
+          # Campaigns without an Event date are listed by start date if they started within this many days.
+          START_DATE_LOOKBACK_DAYS: '365'
       - name: Build the page
         run: node scripts/render.mjs
         env:
@@ -37,4 +41,3 @@ jobs:
         run: node scripts/publish-hubspot.mjs
         env:
           HUBSPOT_PUBLISH_TOKEN: ${{ secrets.REVOPS_HUBSPOT_CONTENT_TOKEN }}
-          HUBSPOT_TEMPLATE_PATH: endsight/endsight-event-roi.html

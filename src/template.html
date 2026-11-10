@@ -344,12 +344,29 @@
   </div>
 </aside>
 
-<script id="es-data" type="application/json">/*__DATA__*/</script>
+<script id="es-meta" type="application/json">/*__META__*/</script>
+<!--__DATA__-->
 <script id="es-refresh" type="application/json">/*__REFRESH__*/</script>
 <script>
+// The data is gzipped and base64-encoded across one or more <script class="es-chunk"> blocks,
+// so the page stays inside HubSpot's file size limit. Decode it, then build the page.
 (function () {
   'use strict';
-  var DATA = JSON.parse(document.getElementById('es-data').textContent || '{}');
+  function loadData() {
+    var b64 = Array.prototype.map.call(document.querySelectorAll('script.es-chunk'), function (s) { return s.textContent.trim(); }).join('');
+    if (!b64) return Promise.resolve({});
+    var bin = atob(b64), bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    return new Response(stream).text().then(JSON.parse);
+  }
+  loadData().then(start, function (e) {
+    var t = document.getElementById('takeaway');
+    if (t) t.textContent = 'The data could not be loaded in this browser. Try reloading, or open the page in a current version of Chrome, Edge, Safari or Firefox.';
+    if (window.console) console.error(e);
+  });
+
+function start(DATA) {
   var events = (DATA.events || []).slice().sort(function (a, b) { return String(b.eventDate).localeCompare(String(a.eventDate)); });
   var contacts = DATA.contacts || {};
   var deals = DATA.deals || [];
@@ -1065,7 +1082,7 @@
     function waitForPage(deadline) {
       var u = location.pathname + (location.search ? location.search + '&' : '?') + 'r=' + Date.now();
       return fetch(u, {cache: 'no-store', credentials: 'same-origin'}).then(function (r) { return r.text(); }).then(function (html) {
-        var m = html.match(/"generatedAt":"([^"]+)"/);
+        var m = html.match(/"generatedAt":"([^"]+)"/); // from the es-meta block
         if (m && m[1] > asOf) return true;
         if (Date.now() > deadline) return false;
         return wait(5000).then(function () { return waitForPage(deadline); });
@@ -1093,6 +1110,7 @@
       });
     });
   }
+}
 })();
 </script>
 <!--HUBSPOT_FOOTER-->
