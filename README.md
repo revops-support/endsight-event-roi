@@ -4,14 +4,14 @@ A standalone event ROI page for Endsight, rebuilt daily from Endsight's HubSpot.
 
 ```
 scripts/fetch-data.mjs      Endsight HubSpot  ->  data/data.json
-scripts/render.mjs          template + data   ->  dist/index.html            (any web server)
-                                               ->  dist/hubspot-template.html (HubSpot coded template)
-scripts/publish-hubspot.mjs dist/hubspot-template.html -> our HubSpot Design Manager
+scripts/render.mjs          template + data   ->  dist/index.html   (any web server)
+                                               ->  dist/hubspot/     (HubSpot coded template plus data partials)
+scripts/publish-hubspot.mjs dist/hubspot/     ->  the hosting portal's Design Manager
 .github/workflows/refresh.yml  runs all three every morning at 5:47 AM Pacific, and on demand
 cloudflare-worker/worker.js  Cloudflare Worker behind the page's Refresh data button
 ```
 
-Node 22 or later. No npm dependencies. The page loads Chart.js from jsDelivr and Lexend Deca from Google Fonts.
+Node 22 or later. No npm dependencies. The data is gzipped and base64-encoded into the page, and on HubSpot it is split into partials of about 1 MB each, because HubSpot rejects coded files over 1.5 MiB. The browser unpacks it on load (any current Chrome, Edge, Safari or Firefox). Each publish uploads new partials, then the template that includes them, then deletes the previous partials, so a visitor never sees half of one run and half of another. Deals that closed before the earliest event date, and meetings created before it, are dropped because no event can credit them. The page loads Chart.js from jsDelivr and Lexend Deca from Google Fonts.
 
 ## What the page shows
 
