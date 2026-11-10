@@ -2,8 +2,12 @@ name: Refresh Endsight Event ROI
 
 on:
   schedule:
-    # 13:47 UTC = 5:47 AM Pacific (6:47 AM during daylight time)
+    # Every morning, weekends included: 13:47 UTC = 5:47 AM Pacific (6:47 AM during daylight time)
     - cron: '47 13 * * *'
+    # Hourly through the Pacific workday, Monday to Friday, so new campaigns show up within the hour.
+    # 14:07 to 23:07 UTC Mon-Fri, then 00:07 to 03:07 UTC Tue-Sat = 6:07 AM to 7:07 PM Pacific (standard time).
+    - cron: '7 14-23 * * 1-5'
+    - cron: '7 0-3 * * 2-6'
   workflow_dispatch:
 
 concurrency:

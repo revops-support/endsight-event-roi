@@ -1008,7 +1008,7 @@
   eventSel.addEventListener('change', function () { writeHash(); render(); });
   daysSel.addEventListener('change', function () { writeHash(); render(); });
   if (DATA.generatedAt) {
-    $('asof').textContent = 'Data as of ' + new Date(DATA.generatedAt).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: DATA.timeZone || 'America/Los_Angeles', timeZoneName: 'short'});
+    $('asof').textContent = 'Data as of ' + new Date(DATA.generatedAt).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: DATA.timeZone || 'America/Los_Angeles', timeZoneName: 'short'}) + '. Updates hourly on weekdays, 6 AM to 7 PM Pacific.';
   }
   render();
 })();

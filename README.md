@@ -7,7 +7,7 @@ scripts/fetch-data.mjs      Endsight HubSpot  ->  data/data.json
 scripts/render.mjs          template + data   ->  dist/index.html            (any web server)
                                                ->  dist/hubspot-template.html (HubSpot coded template)
 scripts/publish-hubspot.mjs dist/hubspot-template.html -> our HubSpot Design Manager
-.github/workflows/refresh.yml  runs all three every morning, 5:47 AM Pacific
+.github/workflows/refresh.yml  runs all three every morning at 5:47 AM Pacific, and hourly 6 AM to 7 PM Pacific on weekdays
 ```
 
 Node 22 or later. No npm dependencies. The page loads Chart.js from jsDelivr and Lexend Deca from Google Fonts.
@@ -90,7 +90,7 @@ Actions > Refresh Endsight Event ROI > Run workflow. This uploads `endsight/ends
 3. Audience access: **Password**. Share the password with Endsight separately from the link.
 4. Publish.
 
-From then on, each morning's run re-uploads the template and the live page shows the new data immediately. Nothing else needs republishing.
+From then on, every scheduled run re-uploads the template and the live page shows the new data immediately. Nothing else needs republishing. A campaign that gets an Event date appears in the picker after the next hourly run. For an immediate refresh, run the workflow by hand from the Actions tab.
 
 ## Moving to Endsight's server
 
