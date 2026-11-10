@@ -211,7 +211,7 @@
   </div>
 
   <div class="sec-head"><h2>Influence</h2><a class="hs-link" data-hs="report-stage" target="_blank" rel="noopener">HubSpot report</a></div>
-  <p class="sub">Every contact the event touched, ranked by the strongest touch: attended (scanned in Blinq), engaged (opened or clicked an event email, submitted an event form, or had a meeting in the window) or targeted (only added to an event list, or counted by HubSpot through a sequence, page view or similar). HubSpot's own influenced count treats all three the same.</p>
+  <p class="sub">Every contact the event touched, ranked by the strongest touch: attended (scanned in Blinq), engaged (opened or clicked an event email, or submitted an event form) or targeted (only added to an event list, or counted by HubSpot through a sequence, page view or similar). HubSpot's own influenced count treats all three the same.</p>
   <div class="grid">
     <div class="card"><h3>Contacts influenced</h3><div class="big" id="k-i-all"></div><div class="note" id="k-i-note"></div></div>
     <div class="card"><h3>Attended</h3><div class="big" id="k-i-att"></div></div>
@@ -309,7 +309,7 @@
       <dt>Contact Type</dt><dd>The contact's own Type property: Client counts as Customer, Partner or Reseller as Partner, Prospect as Prospect, any other value as Other. A blank Type shows as Unknown.</dd>
       <dt>Influenced contact</dt><dd>Anyone HubSpot counts as influenced by the campaign, plus anyone with a touch traced below. Deleted or merged contacts drop out.</dd>
       <dt>Attended</dt><dd>Scanned into the event's Blinq campaign. The scan is dated by when the contact joined the Blinq list, or the Event date if that is not known.</dd>
-      <dt>Engaged</dt><dd>Opened or clicked a marketing email on the campaign, submitted a form on the campaign, or had a meeting created between the campaign start and the end of the window.</dd>
+      <dt>Engaged</dt><dd>Opened or clicked a marketing email on the campaign, or submitted a form on the campaign, between the campaign start and the end of the window. Meetings are an outcome the event is credited with, not a sign of engagement, so a meeting never moves a contact up a tier or makes an open deal influenced.</dd>
       <dt>Targeted</dt><dd>Only added to a list on the campaign, or counted by HubSpot through a touch this page cannot trace yet, such as a sequence enrollment, page view or ad interaction.</dd>
       <dt>Meetings</dt><dd>Any meeting created from the Event date through the end of the window with at least one influenced contact. Meetings typed as internal or personal are left out. Held: start time has passed and the outcome is not canceled or no-show. Upcoming: start time still ahead. The Type and influence shown are the strongest among the meeting's contacts.</dd>
       <dt>Deals created</dt><dd>Created from the Event date through the end of the window with at least one influenced contact, at any influence level.</dd>
@@ -435,13 +435,12 @@
     var out = {};
     Object.keys(ids).forEach(function (id) {
       var ts = (T[id] || []).slice();
-      (meetingsByContact[id] || []).forEach(function (m) { if (m.createdate >= cs && m.createdate <= we) ts.push({k: 'meeting', at: m.createdate, d: m.title}); });
       var attended = ts.some(function (t) { return t.k === 'scan'; });
-      var engaged = ts.some(function (t) { return (t.k === 'open' || t.k === 'click' || t.k === 'form' || t.k === 'meeting') && inWin(t.at); });
+      var engaged = ts.some(function (t) { return (t.k === 'open' || t.k === 'click' || t.k === 'form') && inWin(t.at); });
       var tier = attended ? 'Attended' : engaged ? 'Engaged' : 'Targeted';
       var traced = ts.length > 0;
       if (!traced && hsSet[id]) ts.push({k: 'other', at: null, d: 'Sequence, page view, ad or other'});
-      var qual = ts.filter(function (t) { return t.k === 'scan' || ((t.k === 'open' || t.k === 'click' || t.k === 'form' || t.k === 'meeting') && inWin(t.at)); })
+      var qual = ts.filter(function (t) { return t.k === 'scan' || ((t.k === 'open' || t.k === 'click' || t.k === 'form') && inWin(t.at)); })
         .map(function (t) { return t.at || ws; });
       out[id] = {tier: tier, type: typeGroup(id), touches: ts, qual: qual, hubspot: !!hsSet[id]};
     });

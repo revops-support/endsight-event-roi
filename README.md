@@ -34,7 +34,7 @@ The nightly job pulls each touch with its date; the page applies these rules for
 | When did the event happen? | The campaign's Event date. The window runs from it. |
 | When did someone register? | HubSpot marketing event registrations on the campaign (0 for WIFS, which Endsight exhibits at). |
 | Attended | Scanned into the event's Blinq campaign, dated by when the contact joined the Blinq list. |
-| Engaged | Opened or clicked a campaign email, submitted a campaign form, or had a meeting created between the campaign start and the end of the window. |
+| Engaged | Opened or clicked a campaign email, or submitted a campaign form, between the campaign start and the end of the window. Meetings are credited as outcomes only: they never raise a contact's tier or make an open deal influenced. |
 | Targeted | Only on a campaign list, or counted by HubSpot through a touch the API doesn't expose (sequence, page view, ad). |
 | Meeting credited | Any meeting created in the window with an influenced contact. Internal and personal meeting types are excluded. Held = start time passed and outcome not canceled or no-show. |
 | Deal created | Created in the window with any influenced contact. |
