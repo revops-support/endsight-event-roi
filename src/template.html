@@ -1,0 +1,1019 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Event ROI | Endsight</title>
+<!--HUBSPOT_HEAD-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+<style>
+  :root {
+    --blue: #0055A5;
+    --blue-dark: #003F7D;
+    --blue-soft: #E8F0F9;
+    --blue-mid: #8FB3DB;
+    --yellow: #FFD204;
+    --ink: #1B2430;
+    --muted: #5B6676;
+    --line: #E3E7ED;
+    --panel: #FFFFFF;
+    --bg: #F6F8FB;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: "Lexend Deca", system-ui, -apple-system, "Segoe UI", sans-serif; font-weight: 300; font-size: 15px; line-height: 1.5; }
+  body.drawer-open { overflow: hidden; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible, button:focus-visible, select:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px 48px; }
+  header.top { background: var(--panel); border-bottom: 4px solid var(--yellow); }
+  header.top .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; padding-top: 16px; padding-bottom: 16px; }
+  .logo { height: 34px; width: auto; display: block; }
+  .title { font-size: 20px; font-weight: 500; color: var(--blue); margin: 0; flex: 1 1 auto; letter-spacing: -0.01em; }
+  .controls { display: flex; flex-wrap: wrap; gap: 12px; }
+  .controls label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 400; color: var(--muted); }
+  select { font: inherit; font-weight: 400; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 32px 8px 10px; min-width: 180px; appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position: calc(100% - 16px) 52%, calc(100% - 11px) 52%; background-size: 5px 5px; background-repeat: no-repeat; }
+  .takeaway { font-size: 19px; font-weight: 300; line-height: 1.5; margin: 28px 0 8px; max-width: 72ch; }
+  .takeaway .nl { font-weight: 500; }
+  .asof { font-size: 12px; color: var(--muted); }
+  .sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; margin: 36px 0 4px; }
+  h2 { font-size: 17px; font-weight: 500; margin: 0; display: flex; align-items: center; gap: 10px; }
+  h2::before { content: ""; width: 4px; height: 18px; background: var(--blue); border-radius: 2px; }
+  .hs-link { font-size: 13px; font-weight: 400; white-space: nowrap; }
+  .hs-link::after { content: " \2197"; }
+  .sub { color: var(--muted); font-size: 13px; margin: 0 0 14px; max-width: 80ch; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 12px; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 12px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; min-width: 0; }
+  .card h3 { font-size: 12px; font-weight: 400; color: var(--muted); margin: 0 0 6px; display: flex; justify-content: space-between; gap: 8px; }
+  .card.hero { border-top: 3px solid var(--blue); }
+  .big { font-size: 30px; font-weight: 400; line-height: 1.15; font-variant-numeric: tabular-nums; }
+  .big.small { font-size: 17px; line-height: 1.6; color: var(--muted); }
+  .note { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  /* A number that opens the records behind it */
+  .nl { font: inherit; color: var(--blue); background: none; border: 0; padding: 0; margin: 0; cursor: pointer; text-decoration: underline; text-decoration-color: rgba(0, 85, 165, .3); text-underline-offset: 4px; text-decoration-thickness: 1px; font-variant-numeric: tabular-nums; text-align: inherit; }
+  .nl:hover { text-decoration-color: var(--blue); }
+  .big .nl { text-decoration-thickness: 2px; }
+  a.nl::after { content: none; }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 10px 14px; margin-top: 14px; }
+  .metric .lab { font-size: 12px; color: var(--muted); }
+  .metric .val { font-size: 17px; font-weight: 400; }
+  .chart { position: relative; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--muted); margin-top: 10px; }
+  .chips span b { font-weight: 400; }
+  .tablewrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-weight: 400; color: var(--muted); font-size: 12px; border-bottom: 1px solid var(--line); padding: 8px 10px; white-space: nowrap; }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  td.num, th.num { text-align: right; white-space: nowrap; }
+  td .subl { display: block; font-size: 12px; color: var(--muted); }
+  .wide td:first-child { min-width: 220px; }
+  .pill { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--blue-soft); color: var(--blue-dark); white-space: nowrap; }
+  .pill.follow { background: #FFF6CC; color: #6B5600; }
+  .empty { color: var(--muted); font-size: 13px; padding: 10px 0 2px; }
+  details.defs { margin-top: 40px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 18px; }
+  summary { cursor: pointer; font-weight: 400; }
+  dl { display: grid; grid-template-columns: minmax(140px, 220px) 1fr; gap: 8px 20px; margin: 14px 0 4px; font-size: 14px; }
+  dt { color: var(--muted); }
+  dd { margin: 0; }
+  footer { margin-top: 24px; font-size: 12px; color: var(--muted); }
+
+  /* Drill-down panel */
+  .backdrop { position: fixed; inset: 0; background: rgba(27, 36, 48, .35); z-index: 40; }
+  .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(1000px, 100vw); background: var(--panel); z-index: 41; display: flex; flex-direction: column; box-shadow: -12px 0 32px rgba(27, 36, 48, .18); }
+  .drawer-head { display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; padding: 20px 22px 12px; border-bottom: 1px solid var(--line); }
+  .drawer-head h2 { font-size: 18px; }
+  .drawer-head h2::before { display: none; }
+  .drawer-head p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+  .drawer-close { font: inherit; font-size: 22px; line-height: 1; border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 8px; width: 36px; height: 36px; cursor: pointer; flex: none; }
+  .drawer-bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; padding: 12px 22px; font-size: 13px; color: var(--muted); }
+  .hs-btn { display: inline-block; font-size: 13px; font-weight: 400; color: #fff; background: var(--blue); border-radius: 8px; padding: 7px 12px; }
+  .hs-btn:hover { text-decoration: none; background: var(--blue-dark); }
+  .hs-btn::after { content: " \2197"; }
+  .drawer-body { overflow: auto; padding: 0 22px 24px; flex: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .drawer { animation: slide .18s ease-out; }
+    @keyframes slide { from { transform: translateX(24px); opacity: .6; } to { transform: none; opacity: 1; } }
+  }
+
+  @media (max-width: 560px) {
+    .title { flex-basis: 100%; }
+    select { min-width: 0; width: 100%; }
+    .controls, .controls label { width: 100%; }
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .grid2 { grid-template-columns: 1fr; }
+    .card { padding: 14px; }
+    .big { font-size: 24px; }
+    dl { grid-template-columns: 1fr; }
+    dd { margin-bottom: 8px; }
+    .drawer-head, .drawer-bar { padding-left: 16px; padding-right: 16px; }
+    .drawer-body { padding: 0 16px 24px; }
+  }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+  .facts b { font-weight: 400; color: var(--ink); }
+  table.matrix th, table.matrix td { text-align: right; }
+  table.matrix th:first-child, table.matrix td:first-child { text-align: left; }
+  table.matrix tr.total td { font-weight: 400; border-top: 1px solid var(--line); }
+  .tier { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+  .tier.Attended { background: var(--blue); color: #fff; }
+  .tier.Engaged { background: var(--blue-soft); color: var(--blue-dark); }
+  .tier.Targeted { background: #EEF1F5; color: var(--muted); }
+  .credit { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; white-space: nowrap; background: var(--blue-soft); color: var(--blue-dark); }
+  .credit.influenced { background: #FFF6CC; color: #6B5600; }
+  .touches { font-size: 12px; color: var(--muted); display: inline-block; min-width: 280px; }
+  .warn { background: #FFF8DB; border: 1px solid #F2DA6B; color: #5E4B00; border-radius: var(--radius); padding: 10px 14px; font-size: 13px; margin: 12px 0 0; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <img class="logo" alt="Endsight" src="data:image/png;base64,/*__LOGO__*/">
+    <h1 class="title">Event ROI</h1>
+    <div class="controls">
+      <label for="event">Event<select id="event"></select></label>
+      <label for="days">Credit window<select id="days">
+        <option value="30">30 days after</option>
+        <option value="60">60 days after</option>
+        <option value="90" selected>90 days after</option>
+        <option value="180">180 days after</option>
+      </select></label>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="takeaway" id="takeaway"></p>
+  <div class="facts" id="facts"></div>
+  <div class="asof" id="asof" style="margin-top:6px"></div>
+  <div class="warn" id="type-warn" hidden></div>
+
+  <div class="sec-head"><h2>Return</h2><a class="hs-link" data-hs="campaign" target="_blank" rel="noopener">Campaign in HubSpot</a></div>
+  <p class="sub">Revenue is the deal amount, reported as MRR. A deal or meeting touched by more than one event is split evenly between them, so these figures are this event's credited share. Click any number for the records behind it.</p>
+  <div class="grid">
+    <div class="card hero"><h3>Won MRR, deals created</h3><div class="big" id="k-won"></div><div class="note" id="k-won-note"></div></div>
+    <div class="card hero"><h3>Open pipeline, deals created</h3><div class="big" id="k-pipe"></div><div class="note" id="k-pipe-note"></div></div>
+    <div class="card hero"><h3>Won MRR, deals influenced</h3><div class="big" id="k-iwon"></div><div class="note" id="k-iwon-note"></div></div>
+    <div class="card hero"><h3>Open pipeline, deals influenced</h3><div class="big" id="k-ipipe"></div><div class="note" id="k-ipipe-note"></div></div>
+    <div class="card"><h3>Return on ad spend</h3><div class="big" id="k-roas"></div><div class="note" id="k-roas-note"></div></div>
+    <div class="card"><h3>Meetings held</h3><div class="big" id="k-held"></div><div class="note" id="k-held-note"></div></div>
+  </div>
+
+  <div class="sec-head"><h2>Deals</h2></div>
+  <p class="sub">Created: deal created from the event date through the end of the window, with a contact the event influenced. Influenced: deal already open on the event date, whose contact attended or engaged with the event while the deal was open.</p>
+  <div class="card">
+    <div class="tablewrap">
+      <table class="wide">
+        <thead><tr><th>Deal</th><th>Credit</th><th>Stage</th><th>Created</th><th class="num">Amount (MRR)</th><th>Shared with</th><th class="num">Credited</th><th>Contacts</th></tr></thead>
+        <tbody id="t-deals"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="e-deals" hidden>No deals created or influenced by this event in this window yet.</div>
+  </div>
+
+  <div class="sec-head"><h2>Meetings</h2></div>
+  <p class="sub">Meetings created from the event date through the end of the window with any contact the event influenced, internal meetings excluded. Held means the start time has passed and the outcome is not canceled or no-show.</p>
+  <div class="grid">
+    <div class="card"><h3>Booked</h3><div class="big" id="k-m-all"></div></div>
+    <div class="card"><h3>Held</h3><div class="big" id="k-m-held"></div></div>
+    <div class="card"><h3>Upcoming</h3><div class="big" id="k-m-up"></div></div>
+    <div class="card"><h3>Canceled or no-show</h3><div class="big" id="k-m-cx"></div></div>
+  </div>
+  <div class="grid2" style="margin-top:12px; align-items:start">
+    <div class="card">
+      <h3>By contact Type</h3>
+      <div class="tablewrap"><table class="matrix"><thead><tr><th>Type</th><th>Held</th><th>Upcoming</th><th>Canceled / no-show</th><th>Booked</th></tr></thead><tbody id="t-mtype"></tbody></table></div>
+    </div>
+    <div class="card">
+      <h3>How they were booked</h3>
+      <div class="tablewrap"><table class="matrix"><thead><tr><th>Booked via</th><th>Meetings</th><th>Held</th></tr></thead><tbody id="t-msource"></tbody></table></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="tablewrap">
+      <table class="wide">
+        <thead><tr><th>Meeting</th><th>Booked</th><th>Meeting date</th><th>Status</th><th>Booked via</th><th>Type</th><th>Influence</th><th>Shared with</th></tr></thead>
+        <tbody id="t-meetings"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="e-meetings" hidden>No meetings with influenced contacts in this window yet.</div>
+  </div>
+
+  <div class="sec-head"><h2>Influence</h2><a class="hs-link" data-hs="report-stage" target="_blank" rel="noopener">HubSpot report</a></div>
+  <p class="sub">Every contact the event touched, ranked by the strongest touch: attended (scanned in Blinq), engaged (opened or clicked an event email, submitted an event form, or had a meeting in the window) or targeted (only added to an event list, or counted by HubSpot through a sequence, page view or similar). HubSpot's own influenced count treats all three the same.</p>
+  <div class="grid">
+    <div class="card"><h3>Contacts influenced</h3><div class="big" id="k-i-all"></div><div class="note" id="k-i-note"></div></div>
+    <div class="card"><h3>Attended</h3><div class="big" id="k-i-att"></div></div>
+    <div class="card"><h3>Engaged</h3><div class="big" id="k-i-eng"></div></div>
+    <div class="card"><h3>Targeted only</h3><div class="big" id="k-i-tgt"></div></div>
+  </div>
+  <div class="grid2" style="margin-top:12px; align-items:start">
+    <div class="card">
+      <h3>By contact Type</h3>
+      <div class="tablewrap"><table class="matrix"><thead><tr><th>Type</th><th>Attended</th><th>Engaged</th><th>Targeted</th><th>Total</th></tr></thead><tbody id="t-itype"></tbody></table></div>
+    </div>
+    <div class="card">
+      <h3>Where the influence came from</h3>
+      <div class="tablewrap"><table class="matrix"><thead><tr><th>Touch</th><th>Counts as</th><th>Contacts</th></tr></thead><tbody id="t-isource"></tbody></table></div>
+      <div class="note">A contact with several touches appears under each.</div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px" id="inf-card">
+    <h3><span>Associated contacts by stage</span><span class="note" id="k-inf-note" style="margin:0"></span></h3>
+    <div class="chart" id="w-inf"><canvas id="c-inf" role="img" aria-label="HubSpot-influenced contacts by lifecycle stage"></canvas></div>
+    <div class="chips" id="chips-inf"></div>
+    <div class="empty" id="e-inf" hidden></div>
+  </div>
+
+  <div class="sec-head"><h2>Captures</h2></div>
+  <p class="sub">Contacts scanned into the event's Blinq campaign, split by contact Type.</p>
+  <div class="grid">
+    <div class="card"><h3>Contacts captured</h3><div class="big" id="k-captures"></div></div>
+    <div class="card"><h3>Tagged Wants to meet</h3><div class="big" id="k-wtm"></div></div>
+  </div>
+  <div class="grid2" style="margin-top:12px; align-items:start">
+    <div class="card">
+      <h3><span>Engagement by Blinq tags</span><a class="hs-link" data-hs="report-tags" target="_blank" rel="noopener">HubSpot report</a></h3>
+      <div class="legend" id="legend-tags"></div>
+      <div class="chart" id="w-tags"><canvas id="c-tags" role="img" aria-label="Captured contacts by Blinq tag and contact Type"></canvas></div>
+      <div class="chips" id="chips-tags"></div>
+    </div>
+    <div class="card">
+      <h3>Where captured contacts sit in the lifecycle now</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Lifecycle stage</th><th class="num">Contacts</th></tr></thead>
+          <tbody id="t-stages"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="e-stages" hidden>No contacts captured for this event yet.</div>
+    </div>
+  </div>
+
+  <div class="sec-head"><h2>Email</h2><a class="hs-link" data-hs="campaign" target="_blank" rel="noopener">Campaign in HubSpot</a></div>
+  <p class="sub">Marketing emails on the event's HubSpot campaign. Sent before the event date counts as pre-event; on or after counts as post-event. Rates follow HubSpot's definitions: open, click and unsubscribe rates are of delivered emails, click-to-open is clicks over opens, bounce rate is of sent.</p>
+  <div class="grid2">
+    <div class="card" id="card-promo">
+      <h3>Pre-event emails</h3>
+      <div class="big" id="k-promo-sent"></div><div class="note" id="k-promo-n"></div>
+      <div class="metrics" id="m-promo"></div>
+    </div>
+    <div class="card" id="card-follow">
+      <h3>Post-event emails</h3>
+      <div class="big" id="k-follow-sent"></div><div class="note" id="k-follow-n"></div>
+      <div class="metrics" id="m-follow"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="tablewrap">
+      <table class="wide">
+        <thead><tr><th>Email</th><th>Phase</th><th>Sent date</th><th class="num">Sent</th><th class="num">Delivered</th><th class="num">Delivered %</th><th class="num">Open rate</th><th class="num">Click rate</th><th class="num">Click-to-open</th><th class="num">Unsubscribe rate</th><th class="num">Bounce rate</th><th class="num">Spam reports</th></tr></thead>
+        <tbody id="t-emails"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="e-emails" hidden>No marketing emails are on this campaign in HubSpot yet. Emails count once they are added to the campaign.</div>
+  </div>
+
+  <div class="sec-head"><h2>Web</h2><a class="hs-link" data-hs="campaign" target="_blank" rel="noopener">Campaign in HubSpot</a></div>
+  <p class="sub" id="web-sub">Pages on the event's HubSpot campaign.</p>
+  <div class="grid">
+    <div class="card"><h3>Campaign sessions</h3><div class="big" id="k-sessions"></div></div>
+    <div class="card"><h3>Page views</h3><div class="big" id="k-views"></div></div>
+    <div class="card"><h3>Form submissions</h3><div class="big" id="k-subs"></div></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="tablewrap">
+      <table class="wide">
+        <thead><tr><th>Page</th><th>Type</th><th class="num">Views</th><th class="num">Form submissions</th></tr></thead>
+        <tbody id="t-pages"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="e-pages" hidden>No pages are on this campaign yet.</div>
+  </div>
+
+  <details class="defs">
+    <summary>How each number is worked out</summary>
+    <dl>
+      <dt>Events listed</dt><dd>HubSpot campaigns with the Event date property filled in. The credit window runs from the Event date for 30, 60, 90 or 180 days.</dd>
+      <dt>Contact Type</dt><dd>The contact's own Type property: Client counts as Customer, Partner or Reseller as Partner, Prospect as Prospect, any other value as Other. A blank Type shows as Unknown.</dd>
+      <dt>Influenced contact</dt><dd>Anyone HubSpot counts as influenced by the campaign, plus anyone with a touch traced below. Deleted or merged contacts drop out.</dd>
+      <dt>Attended</dt><dd>Scanned into the event's Blinq campaign. The scan is dated by when the contact joined the Blinq list, or the Event date if that is not known.</dd>
+      <dt>Engaged</dt><dd>Opened or clicked a marketing email on the campaign, submitted a form on the campaign, or had a meeting created between the campaign start and the end of the window.</dd>
+      <dt>Targeted</dt><dd>Only added to a list on the campaign, or counted by HubSpot through a touch this page cannot trace yet, such as a sequence enrollment, page view or ad interaction.</dd>
+      <dt>Meetings</dt><dd>Any meeting created from the Event date through the end of the window with at least one influenced contact. Meetings typed as internal or personal are left out. Held: start time has passed and the outcome is not canceled or no-show. Upcoming: start time still ahead. The Type and influence shown are the strongest among the meeting's contacts.</dd>
+      <dt>Deals created</dt><dd>Created from the Event date through the end of the window with at least one influenced contact, at any influence level.</dd>
+      <dt>Deals influenced</dt><dd>Already open on the Event date (created before it and not closed before it), with a contact who attended or engaged between the campaign start and the end of the window, while the deal was open. Targeted-only touches do not count here.</dd>
+      <dt>Shared credit</dt><dd>When more than one event credits the same deal or meeting in its window, each gets an even share. Weighted credit by touch type will replace this once the weights are agreed.</dd>
+      <dt>Return on ad spend</dt><dd>Credited won MRR from deals created, divided by the campaign's spend total in HubSpot.</dd>
+      <dt>Associated contacts by stage</dt><dd>HubSpot's own influenced contacts for the campaign over the last 365 days, by current lifecycle stage, matching the HubSpot report of that name.</dd>
+      <dt>Email phase</dt><dd>Send date before the Event date is pre-event; on or after is post-event. Results are lifetime totals for each email.</dd>
+      <dt>Dates</dt><dd>All dates are in the HubSpot account's time zone.</dd>
+    </dl>
+  </details>
+  <footer>Data refreshed daily from HubSpot.</footer>
+</main>
+
+<div class="backdrop" id="drill-backdrop" hidden></div>
+<aside class="drawer" id="drill" role="dialog" aria-modal="true" aria-labelledby="drill-title" hidden>
+  <div class="drawer-head">
+    <div><h2 id="drill-title"></h2><p id="drill-sub"></p></div>
+    <button type="button" class="drawer-close" id="drill-close" aria-label="Close">&times;</button>
+  </div>
+  <div class="drawer-bar"><span id="drill-count"></span><a class="hs-btn" id="drill-hs" target="_blank" rel="noopener" hidden>View in HubSpot</a></div>
+  <div class="drawer-body">
+    <div class="tablewrap"><table class="wide"><thead id="drill-thead"></thead><tbody id="drill-tbody"></tbody></table></div>
+    <div class="empty" id="drill-empty" hidden>No records behind this number yet.</div>
+  </div>
+</aside>
+
+<script id="es-data" type="application/json">/*__DATA__*/</script>
+<script>
+(function () {
+  'use strict';
+  var DATA = JSON.parse(document.getElementById('es-data').textContent || '{}');
+  var events = (DATA.events || []).slice().sort(function (a, b) { return String(b.eventDate).localeCompare(String(a.eventDate)); });
+  var contacts = DATA.contacts || {};
+  var deals = DATA.deals || [];
+  var meetings = DATA.meetings || [];
+  var touches = DATA.touches || [];
+  var stageOrder = DATA.stageOrder || [];
+  var TAGS = ['Wants To Meet', 'Client', 'Referral Partner', 'Good Conversation', 'Participated In Draw'];
+  var TYPES = ['Customer', 'Partner', 'Prospect', 'Other', 'Unknown'];
+  var TYPE_COLOR = {Customer: '#0055A5', Partner: '#FFD204', Prospect: '#8FB3DB', Other: '#9AA6B6', Unknown: '#D5DBE3'};
+  var TIERS = ['Attended', 'Engaged', 'Targeted'];
+  var STATUSES = ['Held', 'Upcoming', 'Canceled / no-show'];
+
+  var money = new Intl.NumberFormat('en-US', {style: 'currency', currency: DATA.currency || 'USD', maximumFractionDigits: 0});
+  var int = new Intl.NumberFormat('en-US', {maximumFractionDigits: 0});
+  var dec = new Intl.NumberFormat('en-US', {maximumFractionDigits: 1});
+  var pctFmt = new Intl.NumberFormat('en-US', {style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1});
+  var dateFmt = new Intl.DateTimeFormat('en-US', {month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC'});
+  var shortFmt = new Intl.DateTimeFormat('en-US', {month: 'short', day: 'numeric', timeZone: 'UTC'});
+  function pct(n, d) { return d ? pctFmt.format(n / d) : '—'; }
+  function fmtDate(d) { return d ? dateFmt.format(new Date(d + 'T00:00:00Z')) : '—'; }
+  function fmtShort(d) { return d ? shortFmt.format(new Date(d + 'T00:00:00Z')) : 'undated'; }
+  function plusDays(d, n) { var t = new Date(d + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); }
+  function plural(n, one, many) { return int.format(n) + ' ' + (n === 1 ? one : many); }
+  function $(id) { return document.getElementById(id); }
+  var TODAY = DATA.today || (DATA.generatedAt ? new Intl.DateTimeFormat('en-CA', {timeZone: DATA.timeZone || 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit'}).format(new Date(DATA.generatedAt)) : new Date().toISOString().slice(0, 10));
+
+  // ---------- HubSpot links ----------
+  var HS = 'https://app.hubspot.com';
+  var PID = /^\d+$/.test(String(DATA.portalId || '')) ? String(DATA.portalId) : null;
+  function safe(id) { return /^[A-Za-z0-9-]+$/.test(String(id)); }
+  var link = {
+    contact: function (id) { return PID && safe(id) ? HS + '/contacts/' + PID + '/record/0-1/' + id : null; },
+    company: function (id) { return PID && safe(id) ? HS + '/contacts/' + PID + '/record/0-2/' + id : null; },
+    deal: function (id) { return PID && safe(id) ? HS + '/contacts/' + PID + '/record/0-3/' + id : null; },
+    email: function (id) { return PID && safe(id) ? HS + '/email/' + PID + '/details/' + id + '/performance' : null; },
+    campaign: function (id) { return PID && safe(id) ? HS + '/marketing/' + PID + '/campaigns/' + id : null; },
+    list: function (id) { return PID && safe(id) ? HS + '/contacts/' + PID + '/objectLists/' + id : null; },
+    report: function (id) { return PID && id && safe(id) ? HS + '/reports-list/' + PID + '/' + id : null; },
+    page: function (url) { return /^https?:\/\//.test(String(url || '')) ? url : null; }
+  };
+
+  // ---------- DOM helpers (all text goes in through textContent) ----------
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function a(text, href, cls) {
+    if (!href) return el('span', null, text);
+    var x = el('a', cls, text); x.href = href; x.target = '_blank'; x.rel = 'noopener'; return x;
+  }
+  var DRILLS = {};
+  function drill(text, key) { var b = el('button', 'nl', text); b.type = 'button'; b.setAttribute('data-drill', key); return b; }
+  function put(id) { var t = $(id); if (!t) return; t.replaceChildren.apply(t, Array.prototype.slice.call(arguments, 1)); }
+  function pill(text, cls) { return el('span', cls, text); }
+
+  // ---------- Classification ----------
+  function typeGroup(id) {
+    var t = String((contacts[id] || {}).type || '').toLowerCase();
+    if (!t) return 'Unknown';
+    if (t === 'client' || t === 'customer') return 'Customer';
+    if (t === 'partner' || t === 'reseller' || t === 'referral partner') return 'Partner';
+    if (t === 'prospect') return 'Prospect';
+    return 'Other';
+  }
+  var TYPE_RANK = {Customer: 0, Partner: 1, Prospect: 2, Other: 3, Unknown: 4};
+  var TIER_RANK = {Attended: 0, Engaged: 1, Targeted: 2};
+  function meetingStatus(m) {
+    var o = String(m.outcome || '').toUpperCase();
+    if (o === 'CANCELED' || o === 'CANCELLED' || o === 'NO_SHOW') return 'Canceled / no-show';
+    if (m.start) return m.start <= TODAY ? 'Held' : 'Upcoming';
+    return o === 'COMPLETED' ? 'Held' : 'Upcoming';
+  }
+  var SOURCE_LABEL = {MEETINGS_PUBLIC: 'Meeting link', BIDIRECTIONAL_SYNC: 'Calendar sync', BIDIRECTIONAL_API: 'Calendar from HubSpot', CRM_UI: 'Logged in HubSpot', AVAILABILITY_SCHEDULE: 'Proposed times'};
+  function meetingSource(m) { return SOURCE_LABEL[String(m.source || '').toUpperCase()] || (m.source ? 'Other' : 'Not recorded'); }
+  var KIND_LABEL = {scan: 'Blinq scan', list: 'List', open: 'Opened email', click: 'Clicked email', form: 'Submitted form', meeting: 'Meeting in window', other: 'Other HubSpot influence'};
+
+  // Index touches and meetings once.
+  var touchesBy = {};
+  touches.forEach(function (t) { var e = touchesBy[t.c] = touchesBy[t.c] || {}; (e[t.id] = e[t.id] || []).push(t); });
+  var custMeetings = meetings.filter(function (m) { return !m.internal; });
+  var meetingsByContact = {};
+  custMeetings.forEach(function (m) { (m.contactIds || []).forEach(function (id) { (meetingsByContact[id] = meetingsByContact[id] || []).push(m); }); });
+
+  // Who the event influenced, how strongly, and with which dated touches.
+  function influence(ev, days) {
+    var ws = ev.eventDate, we = plusDays(ws, days), cs = ev.startDate && ev.startDate < ws ? ev.startDate : ws;
+    var inWin = function (at) { return !at || (at >= cs && at <= we); };
+    var T = touchesBy[ev.id] || {};
+    var ids = {};
+    Object.keys(T).forEach(function (id) { if (contacts[id]) ids[id] = 1; });
+    (ev.influencedIds || []).forEach(function (id) { if (contacts[id]) ids[id] = 1; });
+    var hsSet = {};
+    (ev.influencedIds || []).forEach(function (id) { hsSet[id] = 1; });
+    var out = {};
+    Object.keys(ids).forEach(function (id) {
+      var ts = (T[id] || []).slice();
+      (meetingsByContact[id] || []).forEach(function (m) { if (m.createdate >= cs && m.createdate <= we) ts.push({k: 'meeting', at: m.createdate, d: m.title}); });
+      var attended = ts.some(function (t) { return t.k === 'scan'; });
+      var engaged = ts.some(function (t) { return (t.k === 'open' || t.k === 'click' || t.k === 'form' || t.k === 'meeting') && inWin(t.at); });
+      var tier = attended ? 'Attended' : engaged ? 'Engaged' : 'Targeted';
+      var traced = ts.length > 0;
+      if (!traced && hsSet[id]) ts.push({k: 'other', at: null, d: 'Sequence, page view, ad or other'});
+      var qual = ts.filter(function (t) { return t.k === 'scan' || ((t.k === 'open' || t.k === 'click' || t.k === 'form' || t.k === 'meeting') && inWin(t.at)); })
+        .map(function (t) { return t.at || ws; });
+      out[id] = {tier: tier, type: typeGroup(id), touches: ts, qual: qual, hubspot: !!hsSet[id]};
+    });
+    return {ws: ws, we: we, cs: cs, map: out};
+  }
+
+  // Deals and meetings each event credits in a window, before shares are applied.
+  function credits(ev, inf) {
+    var I = inf.map, ws = inf.ws, we = inf.we, cs = inf.cs;
+    var dl = [];
+    deals.forEach(function (d) {
+      var ids = (d.contactIds || []).filter(function (id) { return I[id]; });
+      if (!ids.length || !d.createdate) return;
+      if (d.createdate >= ws && d.createdate <= we) { dl.push({deal: d, kind: 'Created', ids: ids}); return; }
+      if (d.createdate < ws && (!d.isClosed || (d.closedate && d.closedate >= ws))) {
+        var hit = ids.filter(function (id) {
+          return I[id].tier !== 'Targeted' && I[id].qual.some(function (at) { return at >= cs && at <= we && at >= d.createdate && (!d.closedate || at <= d.closedate); });
+        });
+        if (hit.length) dl.push({deal: d, kind: 'Influenced', ids: hit});
+      }
+    });
+    var ml = [];
+    custMeetings.forEach(function (m) {
+      if (!m.createdate || m.createdate < ws || m.createdate > we) return;
+      var ids = (m.contactIds || []).filter(function (id) { return I[id]; });
+      if (!ids.length) return;
+      var type = ids.map(function (id) { return I[id].type; }).sort(function (x, y) { return TYPE_RANK[x] - TYPE_RANK[y]; })[0];
+      var tier = ids.map(function (id) { return I[id].tier; }).sort(function (x, y) { return TIER_RANK[x] - TIER_RANK[y]; })[0];
+      ml.push({meeting: m, ids: ids, type: type, tier: tier, status: meetingStatus(m), source: meetingSource(m)});
+    });
+    return {deals: dl, meetings: ml};
+  }
+
+  function compute(ev, days) {
+    // Credits for every event, so shared deals and meetings can be split evenly.
+    var all = events.map(function (e) { var inf = influence(e, days); return {ev: e, inf: inf, cr: credits(e, inf)}; });
+    var dealBy = {}, mtgBy = {};
+    all.forEach(function (x) {
+      x.cr.deals.forEach(function (c) { (dealBy[c.deal.id] = dealBy[c.deal.id] || []).push(x.ev); });
+      x.cr.meetings.forEach(function (c) { (mtgBy[c.meeting.id] = mtgBy[c.meeting.id] || []).push(x.ev); });
+    });
+    var me = all.filter(function (x) { return x.ev.id === ev.id; })[0];
+    var others = function (by, id) { return (by[id] || []).filter(function (e) { return e.id !== ev.id; }); };
+    me.cr.deals.forEach(function (c) { c.others = others(dealBy, c.deal.id); c.share = 1 / (c.others.length + 1); c.credited = (c.deal.amount || 0) * c.share; });
+    me.cr.meetings.forEach(function (c) { c.others = others(mtgBy, c.meeting.id); c.share = 1 / (c.others.length + 1); });
+    return me;
+  }
+
+  // ---------- Drill-down panel ----------
+  var lastFocus = null;
+  function openDrill(spec) {
+    if (!spec) return;
+    lastFocus = document.activeElement;
+    $('drill-title').textContent = spec.title;
+    $('drill-sub').textContent = spec.sub || '';
+    $('drill-count').textContent = spec.count;
+    var hs = $('drill-hs');
+    if (spec.hs && spec.hs.url) { hs.href = spec.hs.url; hs.textContent = spec.hs.label || 'View in HubSpot'; hs.hidden = false; } else hs.hidden = true;
+    var tr = el('tr');
+    spec.columns.forEach(function (c) { tr.appendChild(el('th', c.num ? 'num' : null, c.label)); });
+    put('drill-thead', tr);
+    var tb = $('drill-tbody');
+    tb.replaceChildren();
+    spec.rows.forEach(function (r) {
+      var row = el('tr');
+      r.forEach(function (cell, i) {
+        var td = el('td', spec.columns[i].num ? 'num' : null);
+        if (cell && cell.nodeType) td.appendChild(cell); else td.textContent = cell == null || cell === '' ? '—' : cell;
+        row.appendChild(td);
+      });
+      tb.appendChild(row);
+    });
+    $('drill-empty').hidden = spec.rows.length > 0;
+    $('drill-backdrop').hidden = false;
+    $('drill').hidden = false;
+    document.body.classList.add('drawer-open');
+    $('drill-close').focus();
+  }
+  function closeDrill() {
+    $('drill').hidden = true;
+    $('drill-backdrop').hidden = true;
+    document.body.classList.remove('drawer-open');
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest && e.target.closest('[data-drill]');
+    if (t) { e.preventDefault(); openDrill(DRILLS[t.getAttribute('data-drill')]); }
+  });
+  $('drill-close').addEventListener('click', closeDrill);
+  $('drill-backdrop').addEventListener('click', closeDrill);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !$('drill').hidden) closeDrill();
+    if (e.key === 'Tab' && !$('drill').hidden) {
+      var f = $('drill').querySelectorAll('a[href]:not([hidden]), button');
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+
+  // ---------- Row builders ----------
+  function contactLink(id) { var c = contacts[id] || {}; return a(c.name || ('Contact ' + id), link.contact(id)); }
+  function contactLinks(ids, inf) {
+    var span = el('span');
+    ids.forEach(function (id, i) {
+      if (i) span.append(', ');
+      span.appendChild(contactLink(id));
+      if (inf && inf[id]) span.append(' (' + inf[id].tier.toLowerCase() + ')');
+    });
+    return ids.length ? span : '—';
+  }
+  function touchText(ts) {
+    return ts.slice().sort(function (x, y) { return String(x.at || '').localeCompare(String(y.at || '')); }).map(function (t) {
+      var what = t.k === 'list' ? 'List: ' + t.d : t.k === 'open' ? 'Opened: ' + t.d : t.k === 'click' ? 'Clicked: ' + t.d : t.k === 'form' ? 'Form: ' + t.d : t.k === 'meeting' ? 'Meeting: ' + t.d : t.k === 'scan' ? 'Blinq scan' : 'HubSpot: ' + t.d;
+      return what + (t.k === 'other' ? '' : ' (' + fmtShort(t.at) + ')');
+    }).join(' · ');
+  }
+  function contactSpec(title, sub, ids, inf, hs) {
+    ids = ids.slice().sort(function (x, y) { return String((contacts[x] || {}).name || '').localeCompare(String((contacts[y] || {}).name || '')); });
+    return {
+      title: title, sub: sub, hs: hs, count: plural(ids.length, 'contact', 'contacts'),
+      columns: [{label: 'Contact'}, {label: 'Company'}, {label: 'Type'}, {label: 'Influence'}, {label: 'Touches'}, {label: 'Lifecycle stage'}],
+      rows: ids.map(function (id) {
+        var c = contacts[id] || {}, x = inf && inf[id];
+        return [contactLink(id), c.company ? a(c.company, c.companyId ? link.company(c.companyId) : null) : '—', c.type || 'Unknown',
+          x ? pill(x.tier, 'tier ' + x.tier) : '—', x ? el('span', 'touches', touchText(x.touches)) : '—', c.stage];
+      })
+    };
+  }
+  function sharedWith(c) { return c.others && c.others.length ? c.others.map(function (e) { return e.name; }).join(', ') : '—'; }
+  function dealSpec(title, sub, list, inf, hs) {
+    return {
+      title: title, sub: sub, hs: hs, count: plural(list.length, 'deal', 'deals'),
+      columns: [{label: 'Deal'}, {label: 'Credit'}, {label: 'Stage'}, {label: 'Created'}, {label: 'Amount (MRR)', num: true}, {label: 'Shared with'}, {label: 'Credited', num: true}, {label: 'Contacts'}],
+      rows: list.slice().sort(function (x, y) { return String(x.deal.createdate).localeCompare(String(y.deal.createdate)); }).map(function (c) {
+        var d = c.deal;
+        return [a(d.name, link.deal(d.id)), pill(c.kind, 'credit' + (c.kind === 'Influenced' ? ' influenced' : '')), d.stage, fmtDate(d.createdate),
+          d.amount == null ? '—' : a(money.format(d.amount), link.deal(d.id)), sharedWith(c), money.format(c.credited), contactLinks(c.ids, inf)];
+      })
+    };
+  }
+  function meetingSpec(title, sub, list, inf) {
+    return {
+      title: title, sub: sub, count: plural(list.length, 'meeting', 'meetings'),
+      columns: [{label: 'Meeting'}, {label: 'Booked'}, {label: 'Meeting date'}, {label: 'Status'}, {label: 'Booked via'}, {label: 'Type'}, {label: 'Influence'}, {label: 'Shared with'}, {label: 'Contacts'}],
+      rows: list.slice().sort(function (x, y) { return String(x.meeting.createdate).localeCompare(String(y.meeting.createdate)); }).map(function (c) {
+        var m = c.meeting;
+        return [a(m.title, link.contact(c.ids[0])), fmtDate(m.createdate), fmtDate(m.start), c.status, c.source, c.type, pill(c.tier, 'tier ' + c.tier), sharedWith(c), contactLinks(c.ids, inf)];
+      })
+    };
+  }
+  function emailTotals(list) {
+    var t = {n: list.length, sent: 0, delivered: 0, opens: 0, clicks: 0, bounces: 0, unsubscribes: 0, spam: 0, hasDelivered: list.length > 0};
+    list.forEach(function (m) {
+      t.sent += m.sent || 0; t.opens += m.opens || 0; t.clicks += m.clicks || 0; t.bounces += m.bounces || 0;
+      t.unsubscribes += m.unsubscribes || 0; t.spam += m.spam || 0;
+      if (m.delivered == null) t.hasDelivered = false; else t.delivered += m.delivered;
+    });
+    return t;
+  }
+  function emailRates(m) {
+    var del = m.delivered;
+    return {
+      deliveredRate: del == null ? '—' : pct(del, m.sent),
+      openRate: del == null ? '—' : pct(m.opens || 0, del),
+      clickRate: del == null ? '—' : pct(m.clicks || 0, del),
+      ctor: pct(m.clicks || 0, m.opens),
+      unsubRate: del == null || m.unsubscribes == null ? '—' : pct(m.unsubscribes, del),
+      bounceRate: m.bounces == null ? '—' : pct(m.bounces, m.sent)
+    };
+  }
+  function emailSpec(title, sub, list, ev) {
+    return {
+      title: title, sub: sub, hs: {url: link.campaign(ev.id), label: 'Campaign in HubSpot'}, count: plural(list.length, 'email', 'emails'),
+      columns: [{label: 'Email'}, {label: 'Sent date'}, {label: 'Sent', num: true}, {label: 'Delivered', num: true}, {label: 'Open rate', num: true}, {label: 'Click rate', num: true}, {label: 'Click-to-open', num: true}, {label: 'Unsubscribe rate', num: true}],
+      rows: list.map(function (m) {
+        var r = emailRates(m), h = link.email(m.id);
+        return [a(m.name, h), fmtDate(m.sentOn), a(int.format(m.sent || 0), h), m.delivered == null ? '—' : a(int.format(m.delivered), h), a(r.openRate, h), a(r.clickRate, h), a(r.ctor, h), a(r.unsubRate, h)];
+      })
+    };
+  }
+
+  // ---------- Charts ----------
+  var charts = {};
+  var valueLabels = {
+    id: 'valueLabels',
+    afterDatasetsDraw: function (chart) {
+      var ctx = chart.ctx, stacked = chart.options.scales.x.stacked;
+      ctx.save();
+      ctx.font = '400 12px "Lexend Deca", system-ui, sans-serif';
+      ctx.fillStyle = '#1B2430';
+      ctx.textBaseline = 'middle';
+      if (stacked) {
+        var last = chart.data.datasets.length - 1;
+        chart.getDatasetMeta(last).data.forEach(function (bar, j) {
+          var total = chart.data.datasets.reduce(function (s, d) { return s + (d.data[j] || 0); }, 0);
+          ctx.fillText(int.format(total), bar.x + 6, bar.y);
+        });
+      } else {
+        chart.data.datasets.forEach(function (ds, i) { chart.getDatasetMeta(i).data.forEach(function (bar, j) { ctx.fillText(int.format(ds.data[j] || 0), bar.x + 6, bar.y); }); });
+      }
+      ctx.restore();
+    }
+  };
+  function barChart(key, labels, datasets, opts) {
+    var wrap = $('w-' + key);
+    wrap.style.height = Math.max(120, labels.length * (opts.stacked ? 30 : 22 * datasets.length + 14) + 40) + 'px';
+    if (!window.Chart) return;
+    var max = 0;
+    labels.forEach(function (_, j) {
+      var v = opts.stacked ? datasets.reduce(function (s, d) { return s + (d.data[j] || 0); }, 0) : Math.max.apply(null, datasets.map(function (d) { return d.data[j] || 0; }));
+      if (v > max) max = v;
+    });
+    var suggested = Math.max(4, Math.ceil(max * 1.2));
+    if (charts[key]) {
+      var ch = charts[key];
+      ch.data.labels = labels;
+      ch.data.datasets.forEach(function (d, i) { d.data = datasets[i].data; });
+      ch.options.scales.x.suggestedMax = suggested;
+      ch.$onPick = opts.onPick;
+      ch.update();
+      return;
+    }
+    Chart.defaults.font.family = '"Lexend Deca", system-ui, sans-serif';
+    Chart.defaults.color = '#5B6676';
+    var chart = new Chart($('c-' + key), {
+      type: 'bar',
+      data: {labels: labels, datasets: datasets.map(function (d) { return {label: d.label, data: d.data, backgroundColor: d.color, borderRadius: 3, maxBarThickness: 18, categoryPercentage: 0.72, barPercentage: 0.92}; })},
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: {duration: 250},
+        layout: {padding: {right: 30}},
+        plugins: {legend: {display: false}, tooltip: {callbacks: {label: function (c) { return c.dataset.label + ': ' + int.format(c.parsed.x) + ' (click for records)'; }}}},
+        scales: {
+          x: {stacked: !!opts.stacked, beginAtZero: true, suggestedMax: suggested, ticks: {precision: 0}, grid: {color: '#EEF1F5'}, border: {display: false}},
+          y: {stacked: !!opts.stacked, grid: {display: false}, border: {display: false}}
+        },
+        onHover: function (e, els) { e.native.target.style.cursor = els.length ? 'pointer' : 'default'; },
+        onClick: function (e, els) { if (els.length && chart.$onPick) chart.$onPick(els[0].datasetIndex, els[0].index); }
+      },
+      plugins: [valueLabels]
+    });
+    chart.$onPick = opts.onPick;
+    charts[key] = chart;
+  }
+
+  // ---------- Table helpers ----------
+  function fillTable(id, rows) {
+    var tb = $(id);
+    tb.replaceChildren();
+    rows.forEach(function (cells) {
+      var tr = el('tr', cells.cls || null);
+      (cells.cells || cells).forEach(function (c) {
+        var td = el('td', c.num ? 'num' : null);
+        if (c.node) td.appendChild(c.node); else td.textContent = c.text == null ? '—' : c.text;
+        if (c.sub) td.appendChild(el('span', 'subl', c.sub));
+        tr.appendChild(td);
+      });
+      tb.appendChild(tr);
+    });
+  }
+  function showTable(tbodyId, emptyId, n) {
+    $(emptyId).hidden = n > 0;
+    var wrap = $(tbodyId).closest('.tablewrap');
+    if (wrap) wrap.hidden = n === 0;
+  }
+  function metric(label, node) { var d = el('div', 'metric'); d.appendChild(el('div', 'lab', label)); var v = el('div', 'val'); v.appendChild(node); d.appendChild(v); return d; }
+  function byStageOrder(a, b) {
+    var ia = stageOrder.indexOf(a), ib = stageOrder.indexOf(b);
+    return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib) || a.localeCompare(b);
+  }
+
+  // ---------- Render ----------
+  var eventSel = $('event'), daysSel = $('days');
+  function readHash() { var p = new URLSearchParams(location.hash.slice(1)); return {event: p.get('event'), days: p.get('days')}; }
+  function writeHash() { var p = new URLSearchParams(); p.set('event', eventSel.value); p.set('days', daysSel.value); history.replaceState(null, '', '#' + p.toString()); }
+
+  function render() {
+    var ev = events.filter(function (e) { return e.id === eventSel.value; })[0];
+    if (!ev) { $('takeaway').textContent = 'No events yet. Fill in the Event date on a HubSpot campaign to add one.'; return; }
+    var days = Number(daysSel.value);
+    var r = compute(ev, days);
+    var I = r.inf.map, ids = Object.keys(I);
+    var winText = fmtDate(r.inf.ws) + ' to ' + fmtDate(r.inf.we);
+    var campaignHs = {url: link.campaign(ev.id), label: 'Campaign in HubSpot'};
+    DRILLS = {};
+    document.querySelectorAll('[data-hs]').forEach(function (x) {
+      var kind = x.getAttribute('data-hs');
+      var href = kind === 'campaign' ? link.campaign(ev.id) : kind === 'report-tags' ? link.report((DATA.reports || {}).blinqTags) : link.report((DATA.reports || {}).contactsByStage);
+      if (href) { x.href = href; x.hidden = false; } else x.hidden = true;
+    });
+
+    // Influence groups
+    var byTier = {Attended: [], Engaged: [], Targeted: []}, byTypeTier = {};
+    TYPES.forEach(function (t) { byTypeTier[t] = {Attended: [], Engaged: [], Targeted: []}; });
+    ids.forEach(function (id) { byTier[I[id].tier].push(id); byTypeTier[I[id].type][I[id].tier].push(id); });
+    var reportHs = {url: link.report((DATA.reports || {}).contactsByStage), label: 'HubSpot report'};
+    DRILLS['i-all'] = contactSpec('Contacts influenced by ' + ev.name, 'Every contact the event touched, as of the end of the window (' + winText + ').', ids, I, reportHs);
+    TIERS.forEach(function (t) { DRILLS['i-' + t] = contactSpec(t + ': ' + ev.name, 'Contacts whose strongest touch was ' + t.toLowerCase() + '.', byTier[t], I); });
+    TYPES.forEach(function (ty) {
+      var tot = [];
+      TIERS.forEach(function (t) { tot = tot.concat(byTypeTier[ty][t]); DRILLS['it-' + ty + '-' + t] = contactSpec(ty + ', ' + t.toLowerCase(), 'Contact Type ' + ty + ', strongest touch ' + t.toLowerCase() + '.', byTypeTier[ty][t], I); });
+      DRILLS['it-' + ty] = contactSpec(ty + ' contacts influenced', 'Contact Type ' + ty + '.', tot, I);
+    });
+
+    // Credits
+    var created = r.cr.deals.filter(function (c) { return c.kind === 'Created'; }), infl = r.cr.deals.filter(function (c) { return c.kind === 'Influenced'; });
+    var won = function (l) { return l.filter(function (c) { return c.deal.isClosedWon; }); };
+    var open = function (l) { return l.filter(function (c) { return !c.deal.isClosed; }); };
+    var sum = function (l) { return l.reduce(function (s, c) { return s + c.credited; }, 0); };
+    var cWon = won(created), cOpen = open(created), iWon = won(infl), iOpen = open(infl);
+    DRILLS.won = dealSpec('Won MRR, deals created', 'Closed Won deals created ' + winText + ' with an influenced contact.', cWon, I, campaignHs);
+    DRILLS.pipe = dealSpec('Open pipeline, deals created', 'Open deals created ' + winText + ' with an influenced contact.', cOpen, I, campaignHs);
+    DRILLS.iwon = dealSpec('Won MRR, deals influenced', 'Deals open on ' + fmtDate(r.inf.ws) + ' and now Closed Won, whose contact attended or engaged while the deal was open.', iWon, I, campaignHs);
+    DRILLS.ipipe = dealSpec('Open pipeline, deals influenced', 'Deals open on ' + fmtDate(r.inf.ws) + ' and still open, whose contact attended or engaged while the deal was open.', iOpen, I, campaignHs);
+    DRILLS.deals = dealSpec('All deals credited', 'Created and influenced deals for ' + ev.name + ', ' + winText + '.', r.cr.deals, I, campaignHs);
+    var spend = ev.spend == null ? null : Number(ev.spend), roas = spend && spend > 0 ? sum(cWon) / spend : null;
+    DRILLS.roas = dealSpec('Return on ad spend', spend ? money.format(sum(cWon)) + ' credited won MRR from deals created, divided by ' + money.format(spend) + ' campaign spend.' : 'No spend is recorded on the HubSpot campaign. These are the won deals ROAS will use.', cWon, I, {url: link.campaign(ev.id), label: 'Campaign budget in HubSpot'});
+
+    var ms = r.cr.meetings, byStatus = {}, byTypeStatus = {}, bySource = {};
+    STATUSES.forEach(function (s) { byStatus[s] = []; });
+    TYPES.forEach(function (t) { byTypeStatus[t] = {}; STATUSES.forEach(function (s) { byTypeStatus[t][s] = []; }); });
+    ms.forEach(function (c) { byStatus[c.status].push(c); byTypeStatus[c.type][c.status].push(c); (bySource[c.source] = bySource[c.source] || []).push(c); });
+    var mSub = 'Meetings created ' + winText + ' with an influenced contact.';
+    DRILLS['m-all'] = meetingSpec('Meetings booked', mSub, ms, I);
+    STATUSES.forEach(function (s) { DRILLS['m-' + s] = meetingSpec('Meetings: ' + s.toLowerCase(), mSub, byStatus[s], I); });
+    TYPES.forEach(function (t) {
+      var all = [];
+      STATUSES.forEach(function (s) { all = all.concat(byTypeStatus[t][s]); DRILLS['mt-' + t + '-' + s] = meetingSpec(t + ' meetings: ' + s.toLowerCase(), mSub, byTypeStatus[t][s], I); });
+      DRILLS['mt-' + t] = meetingSpec(t + ' meetings', mSub, all, I);
+    });
+    Object.keys(bySource).forEach(function (s) {
+      DRILLS['ms-' + s] = meetingSpec('Booked via ' + s, mSub, bySource[s], I);
+      DRILLS['ms-' + s + '-held'] = meetingSpec('Booked via ' + s + ', held', mSub, bySource[s].filter(function (c) { return c.status === 'Held'; }), I);
+    });
+    var heldCredited = byStatus.Held.reduce(function (s, c) { return s + c.share; }, 0);
+
+    // Takeaway and event facts
+    var t = $('takeaway');
+    t.replaceChildren();
+    t.append(ev.name + ': ');
+    t.appendChild(drill(int.format(ids.length), 'i-all')); t.append(' contacts influenced (');
+    t.appendChild(drill(int.format(byTier.Attended.length), 'i-Attended')); t.append(' attended, ');
+    t.appendChild(drill(int.format(byTier.Engaged.length), 'i-Engaged')); t.append(' engaged), ');
+    t.appendChild(drill(int.format(byStatus.Held.length), 'm-Held')); t.append(byStatus.Held.length === 1 ? ' meeting held and ' : ' meetings held and ');
+    t.appendChild(drill(money.format(sum(cWon)), 'won')); t.append(' won MRR from deals created within ' + days + ' days.');
+    if (TODAY < r.inf.we) t.append(TODAY >= ev.eventDate ? ' The window is still open.' : ' The event has not started yet.');
+
+    var f = $('facts');
+    f.replaceChildren();
+    function fact(label, node) { var s = el('span'); s.append(label + ' '); s.appendChild(node); f.appendChild(s); }
+    fact('Event date', el('b', null, fmtDate(ev.eventDate)));
+    fact('Credit window', el('b', null, winText));
+    fact('HubSpot event registrations', el('b', null, ev.registrations == null ? 'not tracked' : int.format(ev.registrations)));
+    DRILLS.captures = contactSpec('Contacts captured at ' + ev.name, 'Contacts scanned into the ' + ev.name + ' Blinq campaign.', byTier.Attended, I);
+    fact('Blinq scans', drill(int.format(byTier.Attended.length), 'captures'));
+
+    var unknown = ids.filter(function (id) { return I[id].type === 'Unknown'; }).length;
+    var warn = $('type-warn');
+    if (ids.length && unknown / ids.length > 0.5) {
+      warn.hidden = false;
+      warn.textContent = int.format(unknown) + ' of ' + int.format(ids.length) + ' influenced contacts have no contact Type, so the customer, partner and prospect splits below are mostly Unknown until Type is filled in.';
+    } else warn.hidden = true;
+
+    // Return
+    put('k-won', drill(money.format(sum(cWon)), 'won'));
+    put('k-won-note', drill(plural(cWon.length, 'deal', 'deals'), 'won'));
+    put('k-pipe', drill(money.format(sum(cOpen)), 'pipe'));
+    put('k-pipe-note', drill(plural(cOpen.length, 'deal', 'deals'), 'pipe'));
+    put('k-iwon', drill(money.format(sum(iWon)), 'iwon'));
+    put('k-iwon-note', drill(plural(iWon.length, 'deal', 'deals'), 'iwon'));
+    put('k-ipipe', drill(money.format(sum(iOpen)), 'ipipe'));
+    put('k-ipipe-note', drill(plural(iOpen.length, 'deal', 'deals'), 'ipipe'));
+    if (roas == null) {
+      $('k-roas').className = 'big small';
+      put('k-roas', drill('No spend yet', 'roas'));
+      put('k-roas-note', a('Add spend items to the campaign', link.campaign(ev.id)));
+    } else {
+      $('k-roas').className = 'big';
+      put('k-roas', drill(roas.toFixed(1) + 'x', 'roas'));
+      put('k-roas-note', document.createTextNode('On '), a(money.format(spend), link.campaign(ev.id), 'nl'), document.createTextNode(' campaign spend'));
+    }
+    put('k-held', drill(int.format(byStatus.Held.length), 'm-Held'));
+    put('k-held-note', heldCredited !== byStatus.Held.length ? drill(dec.format(heldCredited) + ' after sharing', 'm-Held') : document.createTextNode(''));
+
+    // Deals table
+    var dealRows = r.cr.deals.slice().sort(function (x, y) { return String(x.deal.createdate).localeCompare(String(y.deal.createdate)); });
+    fillTable('t-deals', dealRows.map(function (c) {
+      var d = c.deal;
+      return [{node: a(d.name, link.deal(d.id))}, {node: pill(c.kind, 'credit' + (c.kind === 'Influenced' ? ' influenced' : ''))}, {text: d.stage}, {text: fmtDate(d.createdate)},
+        {node: d.amount == null ? el('span', null, '—') : a(money.format(d.amount), link.deal(d.id)), num: true}, {text: sharedWith(c)},
+        {node: a(money.format(c.credited), link.deal(d.id)), num: true}, {node: contactLinks(c.ids, I)}];
+    }));
+    showTable('t-deals', 'e-deals', dealRows.length);
+
+    // Meetings
+    put('k-m-all', drill(int.format(ms.length), 'm-all'));
+    put('k-m-held', drill(int.format(byStatus.Held.length), 'm-Held'));
+    put('k-m-up', drill(int.format(byStatus.Upcoming.length), 'm-Upcoming'));
+    put('k-m-cx', drill(int.format(byStatus['Canceled / no-show'].length), 'm-Canceled / no-show'));
+    fillTable('t-mtype', TYPES.map(function (ty) {
+      var row = [{text: ty}];
+      var tot = 0;
+      STATUSES.forEach(function (s) { var n = byTypeStatus[ty][s].length; tot += n; row.push({node: drill(int.format(n), 'mt-' + ty + '-' + s)}); });
+      row.push({node: drill(int.format(tot), 'mt-' + ty)});
+      return row;
+    }).concat([{cls: 'total', cells: [{text: 'All'}].concat(STATUSES.map(function (s) { return {node: drill(int.format(byStatus[s].length), 'm-' + s)}; })).concat([{node: drill(int.format(ms.length), 'm-all')}])}]));
+    var sources = Object.keys(bySource).sort(function (x, y) { return bySource[y].length - bySource[x].length; });
+    fillTable('t-msource', sources.length ? sources.map(function (s) {
+      return [{text: s}, {node: drill(int.format(bySource[s].length), 'ms-' + s)}, {node: drill(int.format(bySource[s].filter(function (c) { return c.status === 'Held'; }).length), 'ms-' + s + '-held')}];
+    }) : [[{text: 'No meetings yet'}, {node: drill('0', 'm-all')}, {node: drill('0', 'm-Held')}]]);
+    var mrows = ms.slice().sort(function (x, y) { return String(x.meeting.createdate).localeCompare(String(y.meeting.createdate)); });
+    fillTable('t-meetings', mrows.map(function (c) {
+      var m = c.meeting;
+      return [{node: a(m.title, link.contact(c.ids[0])), sub: (contacts[c.ids[0]] || {}).name || null}, {text: fmtDate(m.createdate)}, {text: fmtDate(m.start)}, {text: c.status}, {text: c.source}, {text: c.type},
+        {node: pill(c.tier, 'tier ' + c.tier)}, {text: sharedWith(c)}];
+    }));
+    showTable('t-meetings', 'e-meetings', mrows.length);
+
+    // Influence
+    put('k-i-all', drill(int.format(ids.length), 'i-all'));
+    put('k-i-note', document.createTextNode('HubSpot counts '), drill(int.format((ev.influencedIds || []).length), 'inf-all'), document.createTextNode(' over the last 365 days'));
+    put('k-i-att', drill(int.format(byTier.Attended.length), 'i-Attended'));
+    put('k-i-eng', drill(int.format(byTier.Engaged.length), 'i-Engaged'));
+    put('k-i-tgt', drill(int.format(byTier.Targeted.length), 'i-Targeted'));
+    fillTable('t-itype', TYPES.map(function (ty) {
+      var row = [{text: ty}], tot = 0;
+      TIERS.forEach(function (tr) { var n = byTypeTier[ty][tr].length; tot += n; row.push({node: drill(int.format(n), 'it-' + ty + '-' + tr)}); });
+      row.push({node: drill(int.format(tot), 'it-' + ty)});
+      return row;
+    }).concat([{cls: 'total', cells: [{text: 'All'}].concat(TIERS.map(function (tr) { return {node: drill(int.format(byTier[tr].length), 'i-' + tr)}; })).concat([{node: drill(int.format(ids.length), 'i-all')}])}]));
+
+    // Where the influence came from: one row per touch source
+    var src = {};
+    ids.forEach(function (id) {
+      var seen = {};
+      I[id].touches.forEach(function (tc) {
+        var key = tc.k + '|' + (tc.k === 'scan' || tc.k === 'meeting' || tc.k === 'other' ? '' : tc.d);
+        if (seen[key]) return;
+        seen[key] = 1;
+        (src[key] = src[key] || {k: tc.k, d: tc.d, ids: []}).ids.push(id);
+      });
+    });
+    var ORDER = {scan: 0, meeting: 1, click: 2, open: 3, form: 4, list: 5, other: 6};
+    var srcKeys = Object.keys(src).sort(function (x, y) { return ORDER[src[x].k] - ORDER[src[y].k] || src[y].ids.length - src[x].ids.length; });
+    var listByName = {};
+    (ev.lists || []).forEach(function (l) { listByName[l.name] = l; });
+    fillTable('t-isource', srcKeys.map(function (k, i) {
+      var s = src[k], label = KIND_LABEL[s.k] + (s.k === 'list' || s.k === 'open' || s.k === 'click' || s.k === 'form' ? ': ' + s.d : '');
+      var tier = s.k === 'scan' ? 'Attended' : s.k === 'list' || s.k === 'other' ? 'Targeted' : 'Engaged';
+      var key = 'src-' + i;
+      var lst = s.k === 'list' ? listByName[s.d] : null;
+      DRILLS[key] = contactSpec(label, s.k === 'other' ? 'HubSpot counts these contacts as influenced through a touch this page cannot trace yet: sequence enrollment, page view, ad, social or similar.' : 'Contacts with this touch for ' + ev.name + '. Each contact\'s overall influence is its strongest touch.', s.ids, I, lst ? {url: link.list(lst.id), label: 'List in HubSpot'} : null);
+      return [{text: label}, {node: pill(tier, 'tier ' + tier)}, {node: drill(int.format(s.ids.length), key)}];
+    }));
+
+    // HubSpot's Associated contacts by stage
+    if (Array.isArray(ev.influencedIds)) {
+      var infStage = {};
+      ev.influencedIds.forEach(function (id) { var st = (contacts[id] || {}).stage || 'No stage'; (infStage[st] = infStage[st] || []).push(id); });
+      var infStages = Object.keys(infStage).sort(byStageOrder);
+      var w = ev.influencedWindow || {};
+      var infWin = w.start ? fmtDate(w.start) + ' to ' + fmtDate(w.end) : 'the last 365 days';
+      infStages.forEach(function (st) { DRILLS['inf-' + st] = contactSpec('HubSpot-influenced contacts in ' + st, 'Contacts HubSpot counts as influenced by the ' + ev.name + ' campaign, ' + infWin + ', now in ' + st + '.', infStage[st], I, reportHs); });
+      DRILLS['inf-all'] = contactSpec('HubSpot-influenced contacts', 'Contacts HubSpot counts as influenced by the campaign, ' + infWin + '.', ev.influencedIds, I, reportHs);
+      put('k-inf-note', document.createTextNode('HubSpot\'s count, ' + infWin + ': '), drill(int.format(ev.influencedIds.length), 'inf-all'));
+      $('w-inf').hidden = false; $('e-inf').hidden = true;
+      barChart('inf', infStages, [{label: 'Contacts', color: '#0055A5', data: infStages.map(function (st) { return infStage[st].length; })}], {onPick: function (di, i) { openDrill(DRILLS['inf-' + infStages[i]]); }});
+      put.apply(null, ['chips-inf'].concat(infStages.map(function (st) { var s = el('span'); s.append(st + ' '); s.appendChild(drill(int.format(infStage[st].length), 'inf-' + st)); return s; })));
+    } else {
+      put('k-inf-note', document.createTextNode('HubSpot did not return influenced contacts on the last refresh.'));
+      $('w-inf').hidden = true; $('e-inf').hidden = false; $('e-inf').textContent = 'Open the HubSpot report for this view until the next refresh.';
+      put('chips-inf');
+    }
+
+    // Captures by Blinq tag and contact Type
+    var captured = byTier.Attended;
+    var tagIds = {}, tagType = {}, wtm = [], stageIds = {};
+    TAGS.forEach(function (tg) { tagIds[tg] = []; tagType[tg] = {}; TYPES.forEach(function (ty) { tagType[tg][ty] = []; }); });
+    captured.forEach(function (id) {
+      var c = contacts[id] || {};
+      (c.tags || []).forEach(function (tg) {
+        if (!tagIds[tg]) { tagIds[tg] = []; tagType[tg] = {}; TYPES.forEach(function (ty) { tagType[tg][ty] = []; }); }
+        tagIds[tg].push(id); tagType[tg][I[id].type].push(id);
+        if (tg.toLowerCase() === 'wants to meet') wtm.push(id);
+      });
+      var st = c.stage || 'No stage';
+      (stageIds[st] = stageIds[st] || []).push(id);
+    });
+    DRILLS.wtm = contactSpec('Tagged Wants to meet', 'Captured contacts with the Blinq tag Wants To Meet.', wtm, I);
+    put('k-captures', drill(int.format(captured.length), 'captures'));
+    put('k-wtm', drill(int.format(wtm.length), 'wtm'));
+    var tagNames = Object.keys(tagIds);
+    var tagsHs = {url: link.report((DATA.reports || {}).blinqTags), label: 'HubSpot report'};
+    tagNames.forEach(function (tg) {
+      DRILLS['tag-' + tg] = contactSpec('Blinq tag: ' + tg, 'Captured contacts with this tag.', tagIds[tg], I, tagsHs);
+      TYPES.forEach(function (ty) { DRILLS['tag-' + tg + '-' + ty] = contactSpec('Blinq tag: ' + tg + ', ' + ty, 'Captured contacts with this tag and contact Type ' + ty + '.', tagType[tg][ty], I, tagsHs); });
+    });
+    put.apply(null, ['legend-tags'].concat(TYPES.map(function (ty) { var s = el('span'); var i = el('i'); i.style.background = TYPE_COLOR[ty]; s.appendChild(i); s.append(ty); return s; })));
+    barChart('tags', tagNames, TYPES.map(function (ty) { return {label: ty, color: TYPE_COLOR[ty], data: tagNames.map(function (tg) { return tagType[tg][ty].length; })}; }),
+      {stacked: true, onPick: function (di, i) { openDrill(DRILLS['tag-' + tagNames[i] + '-' + TYPES[di]]); }});
+    put.apply(null, ['chips-tags'].concat(tagNames.map(function (tg) { var s = el('span'); s.append(tg + ' '); s.appendChild(drill(int.format(tagIds[tg].length), 'tag-' + tg)); return s; })));
+    var stages = Object.keys(stageIds).sort(byStageOrder);
+    stages.forEach(function (st) { DRILLS['stage-' + st] = contactSpec('Captured contacts in ' + st, 'Current lifecycle stage of contacts captured at ' + ev.name + '.', stageIds[st], I); });
+    fillTable('t-stages', stages.map(function (st) { return [{text: st}, {node: drill(int.format(stageIds[st].length), 'stage-' + st), num: true}]; }));
+    showTable('t-stages', 'e-stages', stages.length);
+
+    // Email
+    var phases = {promo: [], follow: []};
+    (ev.emails || []).forEach(function (m) { phases[m.sentOn && m.sentOn < ev.eventDate ? 'promo' : 'follow'].push(m); });
+    ['promo', 'follow'].forEach(function (k) {
+      var list = phases[k], tot = emailTotals(list), rates = emailRates(tot.hasDelivered ? tot : Object.assign({}, tot, {delivered: null}));
+      var key = 'email-' + k;
+      DRILLS[key] = emailSpec(k === 'promo' ? 'Pre-event emails' : 'Post-event emails', (k === 'promo' ? 'Sent before ' : 'Sent on or after ') + fmtDate(ev.eventDate) + '. Click an email to open its performance page in HubSpot.', list, ev);
+      put('k-' + k + '-sent', drill(int.format(tot.sent), key));
+      put('k-' + k + '-n', document.createTextNode('sent across '), drill(plural(tot.n, 'email', 'emails'), key));
+      put('m-' + k,
+        metric('Delivered', drill(tot.hasDelivered ? int.format(tot.delivered) : '—', key)),
+        metric('Delivered %', drill(rates.deliveredRate, key)),
+        metric('Open rate', drill(rates.openRate, key)),
+        metric('Click rate', drill(rates.clickRate, key)),
+        metric('Click-to-open', drill(rates.ctor, key)),
+        metric('Unsubscribe rate', drill(rates.unsubRate, key)),
+        metric('Bounce rate', drill(rates.bounceRate, key)),
+        metric('Spam reports', drill(int.format(tot.spam), key)));
+    });
+    var emailRows = phases.promo.concat(phases.follow).sort(function (x, y) { return String(x.sentOn).localeCompare(String(y.sentOn)); });
+    fillTable('t-emails', emailRows.map(function (m) {
+      var pre = m.sentOn && m.sentOn < ev.eventDate, rr = emailRates(m), h = link.email(m.id);
+      return [{node: a(m.name, h), sub: m.subject ? 'Subject: ' + m.subject : null}, {node: pill(pre ? 'Pre-event' : 'Post-event', 'pill' + (pre ? '' : ' follow'))}, {text: fmtDate(m.sentOn)},
+        {node: a(int.format(m.sent || 0), h), num: true}, {node: a(m.delivered == null ? '—' : int.format(m.delivered), h), num: true},
+        {node: a(rr.deliveredRate, h), num: true}, {node: a(rr.openRate, h), num: true}, {node: a(rr.clickRate, h), num: true},
+        {node: a(rr.ctor, h), num: true}, {node: a(rr.unsubRate, h), num: true}, {node: a(rr.bounceRate, h), num: true},
+        {node: a(m.spam == null ? '—' : int.format(m.spam), h), num: true}];
+    }));
+    showTable('t-emails', 'e-emails', emailRows.length);
+
+    // Web
+    var pages = (ev.pages || []).slice().sort(function (x, y) { return (y.views || 0) - (x.views || 0); });
+    var mw = ev.metricsWindow || {};
+    $('web-sub').textContent = 'Pages on the event\'s HubSpot campaign' + (mw.start ? ', ' + fmtDate(mw.start) + ' to ' + fmtDate(mw.end) : '') + '. Page names open the live page; numbers open the campaign in HubSpot.';
+    var views = pages.reduce(function (s, p) { return s + (p.views || 0); }, 0), subs = pages.reduce(function (s, p) { return s + (p.submissions || 0); }, 0);
+    var pageSpec = function (title, sub) {
+      return {title: title, sub: sub, hs: campaignHs, count: plural(pages.length, 'page', 'pages'),
+        columns: [{label: 'Page'}, {label: 'Type'}, {label: 'Views', num: true}, {label: 'Form submissions', num: true}],
+        rows: pages.map(function (p) { return [a(p.name, link.page(p.url)), p.type, p.views == null ? '—' : int.format(p.views), p.submissions == null ? '—' : int.format(p.submissions)]; })};
+    };
+    DRILLS['pages-views'] = pageSpec('Page views', 'Views of each page on the campaign.');
+    DRILLS['pages-subs'] = pageSpec('Form submissions', 'Form submissions on each page on the campaign.');
+    put('k-sessions', ev.sessions == null ? el('span', null, '—') : a(int.format(ev.sessions), link.campaign(ev.id), 'nl'));
+    put('k-views', drill(int.format(views), 'pages-views'));
+    put('k-subs', drill(int.format(subs), 'pages-subs'));
+    fillTable('t-pages', pages.map(function (p) {
+      var ch = link.campaign(ev.id);
+      return [{node: a(p.name, link.page(p.url)), sub: p.url || null}, {text: p.type},
+        {node: p.views == null ? el('span', null, '—') : a(int.format(p.views), ch), num: true},
+        {node: p.submissions == null ? el('span', null, '—') : a(int.format(p.submissions), ch), num: true}];
+    }));
+    showTable('t-pages', 'e-pages', pages.length);
+  }
+
+  events.forEach(function (e) { eventSel.appendChild(new Option(e.name + ' · ' + fmtDate(e.eventDate), e.id)); });
+  var h = readHash();
+  if (h.event && events.some(function (e) { return e.id === h.event; })) eventSel.value = h.event;
+  if (h.days && ['30', '60', '90', '180'].indexOf(h.days) >= 0) daysSel.value = h.days;
+  eventSel.addEventListener('change', function () { writeHash(); render(); });
+  daysSel.addEventListener('change', function () { writeHash(); render(); });
+  if (DATA.generatedAt) {
+    $('asof').textContent = 'Data as of ' + new Date(DATA.generatedAt).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: DATA.timeZone || 'America/Los_Angeles', timeZoneName: 'short'});
+  }
+  render();
+})();
+</script>
+<!--HUBSPOT_FOOTER-->
+</body>
+</html>

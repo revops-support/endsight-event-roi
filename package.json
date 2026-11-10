@@ -1,0 +1,13 @@
+{
+  "name": "endsight-event-roi",
+  "private": true,
+  "type": "module",
+  "engines": {"node": ">=20"},
+  "scripts": {
+    "fetch": "node scripts/fetch-data.mjs",
+    "render": "node scripts/render.mjs",
+    "publish": "node scripts/publish-hubspot.mjs",
+    "refresh": "node scripts/fetch-data.mjs && node scripts/render.mjs",
+    "refresh:hubspot": "node scripts/fetch-data.mjs && node scripts/render.mjs && node scripts/publish-hubspot.mjs"
+  }
+}

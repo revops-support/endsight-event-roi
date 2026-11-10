@@ -1,0 +1,36 @@
+name: Refresh Endsight Event ROI
+
+on:
+  schedule:
+    # 13:47 UTC = 5:47 AM Pacific (6:47 AM during daylight time)
+    - cron: '47 13 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: endsight-event-roi
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Pull data from Endsight HubSpot
+        run: node scripts/fetch-data.mjs
+        env:
+          HUBSPOT_TOKEN: ${{ secrets.ENDSIGHT_HUBSPOT_TOKEN }}
+          TIME_ZONE: America/Los_Angeles
+          HUBSPOT_PORTAL_ID: '2823558'
+          REPORT_BLINQ_TAGS: '446645630'
+          REPORT_CONTACTS_BY_STAGE: '446661489'
+      - name: Build the page
+        run: node scripts/render.mjs
+      - name: Publish to HubSpot
+        run: node scripts/publish-hubspot.mjs
+        env:
+          HUBSPOT_PUBLISH_TOKEN: ${{ secrets.REVOPS_HUBSPOT_CONTENT_TOKEN }}
+          HUBSPOT_TEMPLATE_PATH: endsight/endsight-event-roi.html

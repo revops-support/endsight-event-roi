@@ -1,0 +1,5 @@
+# Client data never goes in the repo
+data/
+dist/
+node_modules/
+.env
