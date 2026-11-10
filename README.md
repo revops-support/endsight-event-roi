@@ -10,7 +10,7 @@ scripts/publish-hubspot.mjs dist/hubspot-template.html -> our HubSpot Design Man
 .github/workflows/refresh.yml  runs all three every morning, 5:47 AM Pacific
 ```
 
-Node 20 or later. No npm dependencies. The page loads Chart.js from jsDelivr and Lexend Deca from Google Fonts.
+Node 22 or later. No npm dependencies. The page loads Chart.js from jsDelivr and Lexend Deca from Google Fonts.
 
 ## What the page shows
 
