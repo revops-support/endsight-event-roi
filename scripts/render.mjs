@@ -16,25 +16,31 @@ const data = JSON.parse(await readFile(DATA, 'utf8'));
 
 // Escape so nothing in the data can close the script tag or end HubL's raw block.
 // These characters only ever appear inside JSON strings, where \u escapes are valid.
-const json = JSON.stringify(data)
+const safe = (v) => JSON.stringify(v)
   .replace(/</g, '\\u003c')
   .replace(/>/g, '\\u003e')
   .replace(/&/g, '\\u0026')
   .replace(/%/g, '\\u0025')
   .replace(/\u2028/g, '\\u2028')
   .replace(/\u2029/g, '\\u2029');
+const json = safe(data);
 
-const page = template.replace('/*__LOGO__*/', logo).replace('/*__DATA__*/', json);
-if (page.includes('/*__DATA__*/') || page.includes('/*__LOGO__*/')) throw new Error('template placeholders not replaced');
+// Refresh button: only built in when REFRESH_ENDPOINT is set. It is the path of our HubSpot function
+// (hubspot-function/), which holds the GitHub token. The page itself never carries a credential.
+const refresh = process.env.REFRESH_ENDPOINT ? {endpoint: process.env.REFRESH_ENDPOINT} : null;
 
-const standalone = page.replace('<!--HUBSPOT_HEAD-->\n', '').replace('<!--HUBSPOT_FOOTER-->\n', '');
+// Function replacements, so a "$&" or "$'" inside the data is not read as a replacement pattern.
+const page = template.replace('/*__LOGO__*/', () => logo).replace('/*__DATA__*/', () => json).replace('/*__REFRESH__*/', () => safe(refresh));
+if (page.includes('/*__DATA__*/') || page.includes('/*__LOGO__*/') || page.includes('/*__REFRESH__*/')) throw new Error('template placeholders not replaced');
+
+const standalone = page.replace('<!--HUBSPOT_HEAD-->\n', () => '').replace('<!--HUBSPOT_FOOTER-->\n', () => '');
 
 const hubspot = [
   '<!--\n    templateType: page\n    isAvailableForNewContent: true\n    label: Endsight Event ROI\n-->',
   '{% raw %}',
   page
-    .replace('<!--HUBSPOT_HEAD-->', '{% endraw %}{{ standard_header_includes }}{% raw %}')
-    .replace('<!--HUBSPOT_FOOTER-->', '{% endraw %}{{ standard_footer_includes }}{% raw %}'),
+    .replace('<!--HUBSPOT_HEAD-->', () => '{% endraw %}{{ standard_header_includes }}{% raw %}')
+    .replace('<!--HUBSPOT_FOOTER-->', () => '{% endraw %}{{ standard_footer_includes }}{% raw %}'),
   '{% endraw %}'
 ].join('\n');
 
@@ -42,4 +48,4 @@ await mkdir(OUT_DIR, {recursive: true});
 await writeFile(join(OUT_DIR, 'index.html'), standalone);
 await writeFile(join(OUT_DIR, 'hubspot-template.html'), hubspot);
 if (process.env.OUTPUT_PATH) await copyFile(join(OUT_DIR, 'index.html'), process.env.OUTPUT_PATH);
-console.log(`[render] wrote ${OUT_DIR}/index.html and ${OUT_DIR}/hubspot-template.html (${(standalone.length / 1024).toFixed(0)} KB)`);
+console.log(`[render] wrote ${OUT_DIR}/index.html and ${OUT_DIR}/hubspot-template.html (${(standalone.length / 1024).toFixed(0)} KB), refresh button ${refresh ? 'on' : 'off'}`);

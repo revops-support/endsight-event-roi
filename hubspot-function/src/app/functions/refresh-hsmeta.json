@@ -1,0 +1,12 @@
+{
+  "uid": "endsight_event_roi_refresh_endpoint",
+  "type": "app-function",
+  "config": {
+    "entrypoint": "/app/functions/refresh.js",
+    "endpoint": {
+      "path": "/endsight-event-roi/refresh",
+      "methods": ["GET", "POST"]
+    },
+    "secretKeys": ["ENDSIGHT_GITHUB_TOKEN"]
+  }
+}

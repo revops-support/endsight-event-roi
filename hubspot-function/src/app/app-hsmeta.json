@@ -1,0 +1,20 @@
+{
+  "uid": "endsight_event_roi_refresh",
+  "type": "app",
+  "config": {
+    "description": "Relay behind the Refresh data button on the Endsight Event ROI page. Starts the GitHub workflow that rebuilds the page and reports its progress. Holds the GitHub token so the page never sees it.",
+    "name": "Endsight Event ROI refresh",
+    "distribution": "private",
+    "auth": {
+      "type": "static",
+      "requiredScopes": ["oauth"],
+      "optionalScopes": [],
+      "conditionallyRequiredScopes": []
+    },
+    "permittedUrls": {
+      "fetch": ["https://api.github.com"],
+      "iframe": [],
+      "img": []
+    }
+  }
+}
