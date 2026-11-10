@@ -12,6 +12,8 @@ const TIME_ZONE = process.env.TIME_ZONE || 'America/Los_Angeles';
 const OUT = process.env.OUT || 'data/data.json';
 const BASE = process.env.HUBSPOT_API_BASE || 'https://api.hubapi.com';
 const LOOKBACK = Number(process.env.INFLUENCED_LOOKBACK_DAYS || 365);
+// Campaigns without an Event date are listed by their start date, if it falls within this many days.
+const START_DATE_LOOKBACK = Number(process.env.START_DATE_LOOKBACK_DAYS || 365);
 
 const KNOWN_TAGS = ['Wants To Meet', 'Client', 'Referral Partner', 'Good Conversation', 'Participated In Draw'];
 const CONTACT_PROPS = ['firstname', 'lastname', 'email', 'company', 'associatedcompanyid', 'lifecyclestage', 'type', 'blinq_campaigns', 'blinq_workspace_tags'];
@@ -81,6 +83,8 @@ async function portalInfo() {
 }
 
 async function eventCampaigns() {
+  const today = toDay(new Date().toISOString());
+  const cutoff = plusDays(today, -START_DATE_LOOKBACK);
   const props = 'hs_name,event_date,hs_start_date,hs_end_date,hs_spend_items_sum_amount,hs_budget_items_sum_amount';
   const out = [];
   let after;
@@ -90,8 +94,14 @@ async function eventCampaigns() {
     const page = await hs(`/marketing/v3/campaigns?${q}`);
     for (const c of page.results || []) {
       const p = c.properties || {};
-      if (!p.event_date) continue;
-      out.push({id: c.id, name: p.hs_name, eventDate: toDate(p.event_date), startDate: toDate(p.hs_start_date), endDate: toDate(p.hs_end_date),
+      // Event date when set; otherwise the campaign start date, for campaigns started within the lookback.
+      let eventDate = toDate(p.event_date), dateSource = 'event_date';
+      if (!eventDate) {
+        const sd = toDate(p.hs_start_date);
+        if (!sd || sd < cutoff || sd > today) continue;
+        eventDate = sd; dateSource = 'start_date';
+      }
+      out.push({id: c.id, name: p.hs_name, eventDate, dateSource, startDate: toDate(p.hs_start_date), endDate: toDate(p.hs_end_date),
         spend: num(p.hs_spend_items_sum_amount), budget: num(p.hs_budget_items_sum_amount)});
     }
     after = page.paging && page.paging.next && page.paging.next.after;

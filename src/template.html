@@ -312,7 +312,7 @@
   <details class="defs">
     <summary>How each number is worked out</summary>
     <dl>
-      <dt>Events listed</dt><dd>HubSpot campaigns with the Event date property filled in. The credit window runs from the Event date for 30, 60, 90 or 180 days.</dd>
+      <dt>Events listed</dt><dd>HubSpot campaigns with the Event date property filled in, plus campaigns without one that started in the last year, which use their start date as the Event date and are marked "start date" in the picker. The credit window runs from that date for 30, 60, 90 or 180 days. Filling in Event date on a campaign overrides its start date.</dd>
       <dt>Contact Type</dt><dd>The contact's own Type property: Client counts as Customer, Partner or Reseller as Partner, Prospect as Prospect, any other value as Other. A blank Type shows as Unknown.</dd>
       <dt>Influenced contact</dt><dd>Anyone HubSpot counts as influenced by the campaign, plus anyone with a touch traced below. Deleted or merged contacts drop out.</dd>
       <dt>Attended</dt><dd>Scanned into the event's Blinq campaign. The scan is dated by when the contact joined the Blinq list, or the Event date if that is not known.</dd>
@@ -799,7 +799,7 @@
     var f = $('facts');
     f.replaceChildren();
     function fact(label, node) { var s = el('span'); s.append(label + ' '); s.appendChild(node); f.appendChild(s); }
-    fact('Event date', el('b', null, fmtDate(ev.eventDate)));
+    fact(ev.dateSource === 'start_date' ? 'Start date (no Event date set)' : 'Event date', el('b', null, fmtDate(ev.eventDate)));
     fact('Credit window', el('b', null, winText));
     fact('HubSpot event registrations', el('b', null, ev.registrations == null ? 'not tracked' : int.format(ev.registrations)));
     DRILLS.captures = contactSpec('Contacts captured at ' + ev.name, 'Contacts scanned into the ' + ev.name + ' Blinq campaign.', byTier.Attended, I);
@@ -1009,7 +1009,7 @@
     showTable('t-pages', 'e-pages', pages.length);
   }
 
-  events.forEach(function (e) { eventSel.appendChild(new Option(e.name + ' · ' + fmtDate(e.eventDate), e.id)); });
+  events.forEach(function (e) { eventSel.appendChild(new Option(e.name + ' · ' + fmtDate(e.eventDate) + (e.dateSource === 'start_date' ? ' (start date)' : ''), e.id)); });
   var h = readHash();
   if (h.event && events.some(function (e) { return e.id === h.event; })) eventSel.value = h.event;
   if (h.days && ['30', '60', '90', '180'].indexOf(h.days) >= 0) daysSel.value = h.days;

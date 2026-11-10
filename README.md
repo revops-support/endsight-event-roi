@@ -45,7 +45,7 @@ The nightly job pulls each touch with its date; the page applies these rules for
 
 ## What has to be true in Endsight's HubSpot
 
-1. The campaign has the **Event date** property filled in. That is what adds an event to the picker.
+1. The campaign has the **Event date** property filled in. Campaigns without one are still listed if they started within the last 365 days (`START_DATE_LOOKBACK_DAYS`), using the start date as the Event date and marked "start date" in the picker. Event date always wins when both are set.
 2. The Blinq campaign name matches the HubSpot campaign name exactly, e.g. `WIFS 2026`. Captures join on the contact's Blinq Campaigns value.
 3. Promo and follow-up emails are associated with the campaign. Unassociated emails do not count.
 4. Spend items are entered on the campaign. ROAS stays blank without them.
